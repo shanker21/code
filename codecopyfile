@@ -1,0 +1,71 @@
+		app/code/MDC/LoginAsCustomerSeller/view/sellerhtml/templates/customer/orderhistory.phtml	
+			$selectedFrequency = $order->getDeliveryFrequancy();	
+                        $deliveryDate = date("d/m/Y",strtotime($order->getDeliveryDate()));
+                        // Check if the order is canceled or delivered
+                        if ($order->getState() == 'canceled' || $order->getState() == 'delivered') {
+                            $nextDeliveryDate = date("d/m/Y", strtotime($deliveryDate . " + $selectedFrequency days"));
+                            $order->setDeliveryDate($nextDeliveryDate);
+
+                        }
+=========================================================
+//get the succes msg
+<div class ="mov-success-msg" style="display:none;">
+    </div>
+//get the higdden values
+<input id="leaddayValueHidden" name="leaddayValueHidden" type="hidden" value="" />
+
+//jquery 
+			  $("#set-cutoff-time-form").submit(function(e){
+                
+                e.preventDefault();
+                var cutOffTime = jQuery("input[name='cutofftime']").val();
+                var leadDay = jQuery("input[name = 'lead_day']").val();
+/call the hiidenvalue
+                $("#cutofftimeValueHidden").val(cutOffTime);
+                $("#leaddayValueHidden").val(leadDay);
+                if (cutOffTime!="" || leadDay!="" || cancelOrderCutOffTime!="") {
+                    $.ajax({
+                        url: "<?= $this->getUrl('cutofftime/cutofftime/save'); ?>",
+                        type: "POST",
+                        dataType: 'json',
+                        data: { cutOffTime:cutOffTime, lead_day: leadDay },
+                        showLoader: true,
+                        success: function(response) {
+//show message
+                            $(".mov-success-msg").show();
+                            $(".mov-success-msg").text(response.message);
+//reset the form
+                            $("#set-cutoff-time-form")[0].reset();
+//call the input values to hidden id value
+                            $("input[name='cutofftime']").val($("#cutofftimeValueHidden").val());
+                            $("input[name='lead_day']").val($("#leaddayValueHidden").val());
+                            setTimeout(function() {
+                                $(".mov-success-msg").hide();
+                            }, 1500);  
+                            $("#edit").trigger("click"); 
+                        },
+                        error: function(response) {
+                             
+                            alert(response.message);
+                        }
+                    });
+                } 
+            });
+        });
+</script>
+app/code/MDC/SetCutOffTime/Controller/Sellerhtml/CutOffTime/Save.php
+app/design/sellerhtml/Rocketbazaar/vendor/Magedelight_Vendor/templates/account/profile/setcutofftime.phtml
+
+ ===============================================================================================================================
+
+TypeError: strtolower() expects parameter 1 to be string, null given in /var/www/html/apetito-ltd/app/code/MDC/Sales/Controller/Sellerhtml/Order/Orderoverviewpopupview.php:141
+
+The error message "TypeError: strtolower() expects parameter 1 to be string, null given" indicates that a function called strtolower() is expecting a string as its argument, but it is receiving a null value instead.
+
+if (count($resChildCustomerRelation) > 0) {
+            if (!is_null($resChildCustomerRelation[0]['relation_type']) && strtolower($resChildCustomerRelation[0]['relation_type']) != 'self') {
+                return true;
+            }
+        }
+app/code/MDC/Sales/Controller/Sellerhtml/Order/Orderoverviewpopupview.php
+app/code/MDC/RecentOrder/Controller/Sellerhtml/Recentorder/OrderOverviewHistoryPopupview.php
