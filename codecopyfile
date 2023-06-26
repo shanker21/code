@@ -1,4 +1,5 @@
-		app/code/MDC/LoginAsCustomerSeller/view/sellerhtml/templates/customer/orderhistory.phtml	
+app/code/MDC/LoginAsCustomerSeller/view/sellerhtml/templates/customer/orderhistory.phtml	
+
 			$selectedFrequency = $order->getDeliveryFrequancy();	
                         $deliveryDate = date("d/m/Y",strtotime($order->getDeliveryDate()));
                         // Check if the order is canceled or delivered
@@ -9,6 +10,7 @@
                         }
 =========================================================
 //get the succes msg
+we have to add the in controller file ex(setcutofftime.php) where file is calling in responsedata=""
 <div class ="mov-success-msg" style="display:none;">
     </div>
 //get the higdden values
