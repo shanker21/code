@@ -71,3 +71,26 @@ if (count($resChildCustomerRelation) > 0) {
         }
 app/code/MDC/Sales/Controller/Sellerhtml/Order/Orderoverviewpopupview.php
 app/code/MDC/RecentOrder/Controller/Sellerhtml/Recentorder/OrderOverviewHistoryPopupview.php
+===============================================================================================================
+postcode validation 
+<p class="postcode-error" style="display:none; color:red">Please Enter Valid Postcode</p>
+                    <div class="field postcode">
+
+                        <input type="text" name="postcode" value="<?= $block->escapeHtml($callerData[0]['postcode']);?>" title="<?= $block->escapeHtml("Postcode");?>" class="input-text" id="Postcode_1" placeholder="<?= $block->escapeHtml("Postcode");?>" data-validate="{'required':true, 'validate-zip-international':true}"
+
+                       data-msg-required="Post code can't be empty" maxlength="8" />
+ data-msg-required="Post code can't be empty" maxlength="8" oninput="this.value = this.value.toUpperCase()" 
+/>
+    $('#Postcode_1').on('input', function(){
+                var regexp = /^[A-Z]{1,2}[0-9RCHNQ][0-9A-Z]?\s?[0-9][ABD-HJLNP-UW-Z]{2}$|^[A-Z]{2}-?[0-9]{4}$/;
+                var postcode = $('#Postcode_1').val();
+                var zipcode = postcode.toUpperCase();
+                if(regexp.test(zipcode)){
+                    $('.postcode-error').hide();
+                    $('.save-caller').attr('disabled', false);
+                }
+                else{
+                    $(".postcode-error").show();
+                    $('.save-caller').attr('disabled', 'disabled');
+                }
+            });
