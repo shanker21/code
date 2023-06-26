@@ -94,3 +94,10 @@ postcode validation
                     $('.save-caller').attr('disabled', 'disabled');
                 }
             });
+===================================================================================================================
+if ($leadDay === 0 || $leadDay === 1 || $leadDay === 2) {
+
+
+} else {
+                    throw new \Exception('Enter Valid Value');
+                }
