@@ -61,7 +61,7 @@ app/design/sellerhtml/Rocketbazaar/vendor/Magedelight_Vendor/templates/account/p
 TypeError: strtolower() expects parameter 1 to be string, null given in /var/www/html/apetito-ltd/app/code/MDC/Sales/Controller/Sellerhtml/Order/Orderoverviewpopupview.php:141
 
 The error message "TypeError: strtolower() expects parameter 1 to be string, null given" indicates that a function called strtolower() is expecting a string as its argument, but it is receiving a null value instead.
-
+to reslove this issue we need to check that  the variable is notequalto null.
 if (count($resChildCustomerRelation) > 0) {
             if (!is_null($resChildCustomerRelation[0]['relation_type']) && strtolower($resChildCustomerRelation[0]['relation_type']) != 'self') {
                 return true;
