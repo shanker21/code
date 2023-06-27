@@ -95,9 +95,24 @@ postcode validation
                 }
             });
 ===================================================================================================================
-if ($leadDay === 0 || $leadDay === 1 || $leadDay === 2) {
-
-
-} else {
-                    throw new \Exception('Enter Valid Value');
+if ($vendorId) {
+                $vendorData = $this->vendor->load($vendorId);
+                if (isset($post['cutOffTime']) || isset($post['lead_day'])) {
+                    $leadDay = $post['lead_day'];
+                    // Validate lead_day value
+                    if (!in_array($leadDay, [0, 1, 2])) {
+                        $responseData = [
+                            'success' => false,
+                            'message' => __('Enter Valid Value')
+                        ];
+                    } else {
+                        // Valid lead_day value, proceed with saving
+                        $vendorData->setLeadDay($leadDay);
+                        $vendorData->save();
+                        $responseData = ['success' => true, 'message' => __('Data Saved Successfully.')];
+                    }
                 }
+            }
+        } catch (\Exception $e) {
+            $responseData = ['success' => false, 'message' => __('There is an error processing your request')];
+        }
