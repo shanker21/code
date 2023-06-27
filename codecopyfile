@@ -95,24 +95,18 @@ postcode validation
                 }
             });
 ===================================================================================================================
-if ($vendorId) {
-                $vendorData = $this->vendor->load($vendorId);
-                if (isset($post['cutOffTime']) || isset($post['lead_day'])) {
+in Enter Lead Day it should only accept the 0,1,2 values and should throw Error For any wrong Input :
+Error: Enter Valid Value
+Image
+if (isset($post['cutOffTime']) || isset($post['lead_day'])) {
                     $leadDay = $post['lead_day'];
-                    // Validate lead_day value
-                    if (!in_array($leadDay, [0, 1, 2])) {
-                        $responseData = [
-                            'success' => false,
-                            'message' => __('Enter Valid Value')
-                        ];
+                    if(!in_array($leadDay, [0, 1, 2])) {
+                        $responseData = ['success' => false, 'message' => __('Enter Valid Value')];
                     } else {
-                        // Valid lead_day value, proceed with saving
-                        $vendorData->setLeadDay($leadDay);
+                        $vendorData->setLeadDay($post['lead_day']);
+                        $vendorData->setCutoffTime($post['cutOffTime']);
                         $vendorData->save();
                         $responseData = ['success' => true, 'message' => __('Data Saved Successfully.')];
                     }
-                }
+                } 
             }
-        } catch (\Exception $e) {
-            $responseData = ['success' => false, 'message' => __('There is an error processing your request')];
-        }
