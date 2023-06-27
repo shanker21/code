@@ -9,9 +9,26 @@ app/code/MDC/LoginAsCustomerSeller/view/sellerhtml/templates/customer/orderhisto
 
                         }
 =========================================================
+in Enter Lead Day it should only accept the 0,1,2 values and should throw Error For any wrong Input :
+Error: Enter Valid Value
+Image
+if (isset($post['cutOffTime']) || isset($post['lead_day'])) {
+                    $leadDay = $post['lead_day'];
+                    if(!in_array($leadDay, [0, 1, 2])) {
+                        $responseData = ['success' => false, 'message' => __('Enter Valid Value')];
+                    } else {
+                        $vendorData->setLeadDay($post['lead_day']);
+                        $vendorData->setCutoffTime($post['cutOffTime']);
+                        $vendorData->save();
+                        $responseData = ['success' => true, 'message' => __('Data Saved Successfully.')];
+                    }
+                } 
+            }
 //get the succes msg
 we have to add the in controller file ex(setcutofftime.php) where file is calling in responsedata=""
 <div class ="mov-success-msg" style="display:none;">
+    </div>
+<div class ="error-message">
     </div>
 //get the higdden values
 <input id="leaddayValueHidden" name="leaddayValueHidden" type="hidden" value="" />
@@ -34,8 +51,10 @@ we have to add the in controller file ex(setcutofftime.php) where file is callin
                         showLoader: true,
                         success: function(response) {
 //show message
+				if(ressponse.success){
                             $(".mov-success-msg").show();
                             $(".mov-success-msg").text(response.message);
+("#error-message").hide();
 //reset the form
                             $("#set-cutoff-time-form")[0].reset();
 //call the input values to hidden id value
@@ -45,6 +64,9 @@ we have to add the in controller file ex(setcutofftime.php) where file is callin
                                 $(".mov-success-msg").hide();
                             }, 1500);  
                             $("#edit").trigger("click"); 
+			} else {
+				 $("#error-message").text(response.message);
+			}
                         },
                         error: function(response) {
                              
@@ -95,18 +117,4 @@ postcode validation
                 }
             });
 ===================================================================================================================
-in Enter Lead Day it should only accept the 0,1,2 values and should throw Error For any wrong Input :
-Error: Enter Valid Value
-Image
-if (isset($post['cutOffTime']) || isset($post['lead_day'])) {
-                    $leadDay = $post['lead_day'];
-                    if(!in_array($leadDay, [0, 1, 2])) {
-                        $responseData = ['success' => false, 'message' => __('Enter Valid Value')];
-                    } else {
-                        $vendorData->setLeadDay($post['lead_day']);
-                        $vendorData->setCutoffTime($post['cutOffTime']);
-                        $vendorData->save();
-                        $responseData = ['success' => true, 'message' => __('Data Saved Successfully.')];
-                    }
-                } 
-            }
+
