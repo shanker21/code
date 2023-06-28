@@ -1,3 +1,8 @@
+$writer = new \Zend_Log_Writer_Stream(BP . '/var/log/custom.log');       
+$logger = new \Zend_Log();$logger->addWriter($writer);
+$logger->info();
+======================================================================================
+
 app/code/MDC/LoginAsCustomerSeller/view/sellerhtml/templates/customer/orderhistory.phtml	
 
 			$selectedFrequency = $order->getDeliveryFrequancy();	
