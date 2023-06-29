@@ -3,6 +3,9 @@ $logger = new \Zend_Log();$logger->addWriter($writer);
 $logger->info();
 nojak25094@fulwark.com
 tAy56xWC5H66p7e
+$logger->info(print_r($roundCollection->getSelect()->__toString(), true));
+MDC\RecuringOrder\Helper\Data.php
+MDC\AvailablityDate\Helper\Dat.php
 ======================================================================================
 app/code/MDC/LoginAsCustomerSeller/view/sellerhtml/templates/customer/orderhistory.phtml	
 
