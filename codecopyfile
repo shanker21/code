@@ -1,3 +1,4 @@
+use Psr\Log\LoggerInterface;
 $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/custom.log');       
 $logger = new \Zend_Log();$logger->addWriter($writer);
 $logger->info();
