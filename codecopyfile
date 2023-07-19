@@ -147,3 +147,8 @@ if ($zipcode !== null) {
     $zipcode = strtoupper(str_replace(" ", "", $zipcode));
 }
 Exception #0 (Exception): Deprecated Functionality: str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated i
+=========================================================================================================
+Warning: Undefined array key "someone_else_relation_to_caller" in C:\xampp\htdocs\wff\app\code\MDC\CallerCustomer\Controller\Sellerhtml\Account\CreatePost.php on line 549
+solution is isset
+if(isset($data['someone_else_relation_to_caller'])){
+}
