@@ -137,3 +137,13 @@ in the database is not setting the self for creation of self account
 //logger to check the saved data in databases
 $logger->info(print_r($childCustomerRelation->toArray(), true));
 app/code/MDC/CallerCustomer/Controller/Sellerhtml/Account/CreatePost.php
+=======================================================================================================================
+
+upgrade version
+problem: "We can't add this item to your shopping cart right now. Deprecated Functionality: Automatic conversion of false to array is deprecated
+$this->_availableVendors = [];
+========================================================================================
+if ($zipcode !== null) {
+    $zipcode = strtoupper(str_replace(" ", "", $zipcode));
+}
+Exception #0 (Exception): Deprecated Functionality: str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated i
