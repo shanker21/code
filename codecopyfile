@@ -152,3 +152,9 @@ Warning: Undefined array key "someone_else_relation_to_caller" in C:\xampp\htdoc
 solution is isset
 if(isset($data['someone_else_relation_to_caller'])){
 }
+========================================================================================
+phtml
+$logger = \Magento\Framework\App\ObjectManager::getInstance()->get(\Psr\Log\LoggerInterface::class); 
+$writer = new \Zend_Log_Writer_Stream(BP . '/var/log/allegen.log');       
+$logger = new \Zend_Log();$logger->addWriter($writer);
+$logger->debug('Debug Message: $allergen1 - ' . print_r($dietaryDataArray , true));
