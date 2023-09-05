@@ -158,3 +158,19 @@ $logger = \Magento\Framework\App\ObjectManager::getInstance()->get(\Psr\Log\Logg
 $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/allegen.log');       
 $logger = new \Zend_Log();$logger->addWriter($writer);
 $logger->debug('Debug Message: $allergen1 - ' . print_r($dietaryDataArray , true));
+================================================================================================
+it should accept only number and space 
+/^[0-9\s]*$/.test(value);
+===========================================
+it should accept the space 
+replace(/\s+/g, '')
+================================================================
+when product is added open minicart and close after 3seconds
+openMinicart: function () {
+            $('[data-block="minicart"]').find('[data-role="dropdownDialog"]').dropdownDialog("open");
+            // $(this.minicartElement).find(this.dropdownDialogElement).dropdownDialog('open');
+            
+            setTimeout(function() {
+                $('[data-block="minicart"]').find('[data-role="dropdownDialog"]').dropdownDialog("close");
+            }, 3000); 
+        }
