@@ -174,3 +174,19 @@ openMinicart: function () {
                 $('[data-block="minicart"]').find('[data-role="dropdownDialog"]').dropdownDialog("close");
             }, 3000); 
         }
+===============================================================================================
+$( document ).ready(function () {
+            $("#telephoneno").on("input", function () {
+                var inputValue = $(this).val();
+                var numericValue = inputValue.replace(/[^0-9\s]/g, '');
+                $(this).val(numericValue);
+            });
+        });
+
+        $( document ).ready(function () {
+            $("#mobileno").on("input", function () {
+                var Value = $(this).val();
+                var numberValue = Value.replace(/[^0-9\s]/g, '');
+                $(this).val(numberValue);
+            });
+        });
