@@ -175,6 +175,7 @@ openMinicart: function () {
             }, 3000); 
         }
 ===============================================================================================
+app/design/frontend/Amasty/JetTheme/Magento_CustomerCustomAttributes/templates/customer/form/edit.phtml
 $( document ).ready(function () {
             $("#telephoneno").on("input", function () {
                 var inputValue = $(this).val();
