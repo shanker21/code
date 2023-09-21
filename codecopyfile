@@ -191,3 +191,86 @@ $( document ).ready(function () {
                 $(this).val(numberValue);
             });
         });
+==========================================================================================================
+app/design/frontend/Amasty/JetTheme/Magento_Checkout/web/js/view/minicart-mixin.js
+define([
+ define([
+    'jquery',
+    'underscore'
+], function ($, _) {
+@@ -22,12 +22,18 @@ define([
+            this._super();
+            $minicartElement = $(this.minicartElement);
+            
+            $minicartElement.on('contentLoading', function () {
+                $minicartElement.on('contentUpdated', function () {
+                        self.openMinicart();
+                    self.openMinicart();
+                    self.onClickPopup();
+                    self.onButtonPopup();
+                    self.onButtonPlusPopup()
+                    self.onButtonMinusPopup();
+                });
+            });
+            
+            return this;
+        },
+@@ -46,17 +52,58 @@ define([
+            return this.getCartParamUnsanitizedHtml(name);
+        },
+//when clicking on mini cart icon opens popup
+        onClickPopup: function (){
+            $('.action.showcart').on('click', function () { 
+                //alert('click');            
+                // Show the mini cart popup            
+                $('[data-block="minicart"]').find('[data-role="dropdownDialog"]').dropdownDialog('open'); 
+                $('.block-minicart').show();        
+            });
+        },
+//when clicking on the add to cart button opens a popup
+        onButtonPopup: function (){
+            $('.action.tocart').on('click', function () { 
+                //alert('click');            
+                // Show the mini cart popup            
+                $('[data-block="minicart"]').find('[data-role="dropdownDialog"]').dropdownDialog('open'); 
+                $('.block-minicart').show();        
+            });
+        },
+//when clicking on the add to cart button to increase the quantity(plus), it opens popup
+        onButtonPlusPopup: function (){
+            $('.cart-plus').on('click', function () { 
+                //alert('click');            
+                // Show the mini cart popup            
+                $('[data-block="minicart"]').find('[data-role="dropdownDialog"]').dropdownDialog('open'); 
+                $('.block-minicart').show();        
+            });
+        },
+//when clicking on the add to cart button to decrease the quantity(mius), it opens popup
+        onButtonMinusPopup: function (){
+            $('.cart-minus').on('click', function () { 
+                //alert('click');            
+                // Show the mini cart popup            
+                $('[data-block="minicart"]').find('[data-role="dropdownDialog"]').dropdownDialog('open'); 
+                $('.block-minicart').show();        
+            });
+        },
+        /**
+         * Open mini shopping cart.
+         * @returns {void}
+         */
+        openMinicart: function () {
+            $('[data-block="minicart"]').find('[data-role="dropdownDialog"]').dropdownDialog("open");
+            // $(this.minicartElement).find(this.dropdownDialogElement).dropdownDialog('open');
+            //set timeout
+            setTimeout(function() {
+                $('[data-block="minicart"]').find('[data-role="dropdownDialog"]').dropdownDialog("close");
+            }, 3000); 
+            var minicart = $('[data-block="minicart"]'); 
+            //var minicart2 = $('.minicart-wrapper');       
+            var minicartPopup = minicart.find('[data-role="dropdownDialog"]').dropdownDialog('open');        
+            var timeout = 3000;
+            if (minicartPopup.length) {        
+                setTimeout(function () {                 
+                    minicartPopup.hide();             
+                }, timeout);         
+            }
