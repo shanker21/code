@@ -311,3 +311,5 @@ class SendQuoteEmailCommand extends Command
     // ... (loadQuoteById method remains unchanged)
 }
 
+=========================================
+add the email from admin
