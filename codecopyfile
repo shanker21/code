@@ -274,3 +274,76 @@ define([
                     minicartPopup.hide();             
                 }, timeout);         
             }
+
+
+
+
+
+
+<?php
+
+namespace MDC\Abandoncart\Console\Command;
+
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Framework\App\State;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+//use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
+class SendQuoteEmailCommand extends Command
+{
+    protected $transportBuilder;
+    protected $appState;
+    protected $storeManager;
+    protected $scopeConfig;
+    protected $cart;
+    protected $quoteCollectionFactory;
+    //private $quoteRepository;
+    //protected $quoteFactory;
+    //private $quoteId;
+    
+    const XML_PATH_ABANDONED_EMAIL = 'abandoncart/general/abandoned_email_select_all_email';
+
+    public function __construct(
+        TransportBuilder $transportBuilder,
+        State $appState,
+        StoreManagerInterface $storeManager,
+        ScopeConfigInterface $scopeConfig,
+        CollectionFactory $quoteCollectionFactory
+        //CartRepositoryInterface $cartRepository
+        //\Magento\Quote\Api\CartRepositoryInterface $quoteRepository
+    ) {
+        parent::__construct();
+        $this->transportBuilder = $transportBuilder;
+        $this->appState = $appState;
+        $this->storeManager = $storeManager;
+        $this->scopeConfig = $scopeConfig;
+        $this->quoteCollectionFactory = $quoteCollectionFactory;
+        //$this->quoteRepository = $quoteRepository;
+        //$this->cartRepository = $cartRepository;
+    }
+
+    protected function configure()
+    {
+        $this->setName('mdcabandonedcart:sendquoteemail')
+            ->setDescription('Send quote details via email.');
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {  
+        $quoteCollection = $this->quoteCollectionFactory->create();         
+        $quoteIds = $quoteCollection->getAllIds();         
+        if (!empty($quoteIds)) {             
+            foreach ($quoteIds as $quoteId) {                 
+                $output->writeln("Quote ID: " . $quoteId);             
+            }         
+        } else {             
+            $output->writeln("No quote IDs found.");         
+        }
+        
+    }
+    
+}
