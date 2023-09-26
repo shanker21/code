@@ -1,159 +1,51 @@
-<?php
-namespace MDC\Sales\Block;
-use Magento\Framework\View\Element\Template;
-use Magento\Quote\Model\Quote;
-use Magento\Quote\Model\QuoteRepository;
-
-class Abandoned extends Template
+protected function execute(InputInterface $input, OutputInterface $output)
 {
-    protected $quote;
-    protected $quoteRepository;
+    $quoteCollection = $this->quoteCollectionFactory->create();
+    $quoteIds = $quoteCollection->getAllIds();
 
-    public function __construct(
-        Template\Context $context,
-        QuoteRepository $quoteRepository,
-        Quote $quote,
-        array $data = []
-    ) {
-        parent::__construct($context, $data);
-        $this->quote = $quote;
-        $this->quoteRepository = $quoteRepository;
-    }
+    if (!empty($quoteIds)) {
+        foreach ($quoteIds as $quoteId) {
+            $output->writeln("Quote ID: " . $quoteId);
 
-    public function getQuoteId()
-    { 
-        return $this->quote->getId();
+            // Load the quote by ID
+            $quote = $this->loadQuoteById($quoteId);
+
+            // Check if the quote exists
+            if ($quote) {
+                // Get quote items
+                $quoteItems = $quote->getAllVisibleItems();
+
+                foreach ($quoteItems as $quoteItem) {
+                    // Access item information
+                    $productName = $quoteItem->getProduct()->getName();
+                    $productPrice = $quoteItem->getProduct()->getFinalPrice();
+                    $quantity = $quoteItem->getQty();
+
+                    $output->writeln("Product Name: " . $productName);
+                    $output->writeln("Product Price: " . $productPrice);
+                    $output->writeln("Quantity: " . $quantity);
+                }
+            } else {
+                $output->writeln("Quote with ID " . $quoteId . " not found.");
+            }
+        }
+    } else {
+        $output->writeln("No quote IDs found.");
     }
 }
-?>
-<?php
-/** @var $block \MDC\Sales\Block\Adminhtml\Abandoned */
-$quote = $block->getQuoteId();
-
-if ($quote) :
-    $items = $quote->getAllItems();
-?>
-    <table class="email-items" width="90%">
-        <thead>
-            <tr>
-                <th class="greenbox table-head" colspan="4" bgcolor="#173f35" style="line-height: 30px; color: #fff; font-size: 16px; padding: 5px 10px; text-align: center;" width="460" border="0" cellspacing="0" cellpadding="0">You have the following items in your basket:</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($items as $item) : ?>
-                <tr>
-                    <th class="item-info">
-                        <?= $item->getSku() ?>                         
-                    </th>
-                    <th class="item-info">
-                        <?= $item->getName() ?>                             
-                    </th>
-                    <th class="item-info">
-                        <?= intval($item->getQty()) . ' @ ' . $this->helper('Magento\Framework\Pricing\Helper\Data')->currency($item->getPrice(), true, false) . ' each' ?>
-                    </th>
-                    <th class="item-info">
-                        <?= $this->helper('Magento\Framework\Pricing\Helper\Data')->currency($item->getRowTotal(), true, false) ?>
-                    </th>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-<?php endif; ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
 
 /**
- * Sales Order Email quote items
+ * Load a quote by its ID.
  *
- * @author     Magento Core Team <core@magentocommerce.com>
+ * @param int $quoteId
+ * @return \Magento\Quote\Model\Quote|false
  */
-namespace Magento\Sales\Block\Order\Email;
-
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\View\Element\Template\Context;
-use Magento\Quote\Api\Data\CartItemInterface; // Import the CartItemInterface
-use Magento\Quote\Api\CartRepositoryInterface; // Import the CartRepositoryInterface
-
-/**
- * Sales Order Email items.
- *
- * @api
- * @since 100.0.2
- */
-class Items extends \Magento\Sales\Block\Items\AbstractItems
+protected function loadQuoteById($quoteId)
 {
-    /**
-     * @var CartRepositoryInterface
-     */
-    private $cartRepository;
-
-    /**
-     * @param Context $context
-     * @param array $data
-     * @param CartRepositoryInterface|null $cartRepository
-     */
-    public function __construct(
-        Context $context,
-        array $data = [],
-        ?CartRepositoryInterface $cartRepository = null // Change the type hint and property name
-    ) {
-        $this->cartRepository = $cartRepository ?: ObjectManager::getInstance()->get(CartRepositoryInterface::class); // Change the repository interface and class
-
-        parent::__construct($context, $data);
-    }
-
-    /**
-     * Returns quote item.
-     *
-     * Custom email templates are only allowed to use scalar values for variable data.
-     * So quote item is loaded by item_id, that is passed to block from email template.
-     * For legacy custom email templates it can pass as an object.
-     *
-     * @return CartItemInterface|null // Change the return type hint
-     * @since 102.1.0
-     */
-    public function getItem() // Change the method name
-    {
-        $item = $this->getData('item');
-
-        if ($item !== null) {
-            return $item;
-        }
-        $itemId = (int)$this->getData('item_id');
-        if ($itemId) {
-            $item = $this->cartRepository->get($itemId); // Load the quote item using the CartRepository
-            $this->setData('item', $item);
-        }
-
-        return $this->getData('item');
+    try {
+        $quote = $this->quoteRepository->get($quoteId);
+        return $quote;
+    } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+        return false;
     }
 }
