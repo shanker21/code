@@ -347,3 +347,27 @@ class SendQuoteEmailCommand extends Command
     }
     
 }
+========================================================================================
+accept numberic only
+$("#mobileno").addClass("mobile-check");
+    var regex = /^[0-9]+$/;
+    $.validator.addMethod(
+        'mobile-check', function (value) {
+            if(regex.test(value)) 
+            {
+                return true;
+            }
+        },
+        $.mage.__("Please enter a valid number in this field.")
+    );
+    $("#telephoneno").addClass("telephone-check");
+    var regExp = /^[0-9]+$/;
+    $.validator.addMethod(
+        'telephone-check', function (value) {
+            if(regExp.test(value)) 
+            {
+                return true;
+            }
+        },
+        $.mage.__("Please enter a valid number in this field.")
+    );
