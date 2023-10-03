@@ -1,6 +1,6 @@
 <?php
 
-namespace MDC\Abandoncart\Console\Command;
+namespace MDC\Abandonedcart\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,6 +11,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
 use Magento\Framework\Mail\Template\SenderResolverInterface;
+use Magento\Customer\Api\CustomerRepositoryInterface;
 
 class SendQuoteEmailCommand extends Command
 {
@@ -22,8 +23,9 @@ class SendQuoteEmailCommand extends Command
     protected $quoteCollectionFactory;
     protected $quoteRepository;
     protected $senderResolver;
-    
-    //const XML_PATH_ABANDONED_EMAIL = 'Abandoncart/Abandoncart/email';
+    protected $customerRepository;
+
+    //const XML_PATH_ABANDONED_EMAIL = 'Abandonedcart/Abandonedcart/email_template';
 
     public function __construct(
         TransportBuilder $transportBuilder,
@@ -32,7 +34,8 @@ class SendQuoteEmailCommand extends Command
         ScopeConfigInterface $scopeConfig,
         CollectionFactory $quoteCollectionFactory,
         \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
-        SenderResolverInterface $senderResolver
+        SenderResolverInterface $senderResolver,
+        CustomerRepositoryInterface $customerRepository
     ) {
         parent::__construct();
         $this->transportBuilder = $transportBuilder;
@@ -42,6 +45,7 @@ class SendQuoteEmailCommand extends Command
         $this->quoteCollectionFactory = $quoteCollectionFactory;
         $this->quoteRepository = $quoteRepository;
         $this->senderResolver = $senderResolver;
+        $this->customerRepository = $customerRepository;
         
     }
 
@@ -53,12 +57,15 @@ class SendQuoteEmailCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+         // Set the area code to FRONTEND
+         $this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
+
         $quoteCollection = $this->quoteCollectionFactory->create();
         $quoteIds = $quoteCollection->getAllIds();
         if (!empty($quoteIds)) {
             foreach ($quoteIds as $quoteId) {
                 // Load the quote by ID
-                $quote = $this->loadQuoteById($quoteId);
+                list($quote, $customer) = $this->loadQuoteById($quoteId);
                 // Check if the quote exists
                 if ($quote) {
                     // Get quote items
@@ -67,8 +74,10 @@ class SendQuoteEmailCommand extends Command
                         // Access item information
                         $productName = $quoteItem->getProduct()->getName();
                         $productPrice = $quoteItem->getProduct()->getFinalPrice();
-                        // Send the email with quote details
-                        $this->sendEmail($quoteId, $productName, $productPrice);
+                        // Send the email with quote details to the customer
+                        if ($customer) {
+                            $this->sendEmail($quoteId, $productName, $productPrice, $customer);
+                        }
                     }
                 } else {
                     $output->writeln("Quote with ID " . $quoteId . " not found.");
@@ -77,6 +86,7 @@ class SendQuoteEmailCommand extends Command
         } else {
             $output->writeln("No quote IDs found.");
         }
+        return 0;
     }
 
     /**
@@ -89,17 +99,22 @@ class SendQuoteEmailCommand extends Command
     {
         try {
             $quote = $this->quoteRepository->get($quoteId);
-            return $quote;
+            $customerId = $quote->getCustomerId();
+            if ($customerId) {
+                $customer = $this->customerRepository->getById($customerId);
+                return [$quote, $customer];
+            }
+            return [$quote, null]; // Return the quote and null for customer if no customer is associated.
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-            return false;
+            return [null, null]; // Return null for both quote and customer if the quote doesn't exist.
         }
     }  
-    protected function sendEmail($quoteId, $productName, $productPrice)
+    protected function sendEmail($quoteId, $productName, $productPrice, $customer)
     {
-        $recipientEmail = $this->scopeConfig->getValue(self::XML_PATH_ABANDONED_EMAIL);
-
+        $recipientEmail = 'mereddy.shanker@gmail.com';
+        
         // Load your email template using Magento's email template model
-        $templateId = 'Abandoned Cart'; 
+        $templateId = $this->scopeConfig->getValue('Abandonedcart/Abandonedcart/email_template'); 
 
         // Set the template variables
         $templateVars = [
@@ -107,15 +122,20 @@ class SendQuoteEmailCommand extends Command
             'product_name' => $productName,
             'product_price' => $productPrice,
         ];
+        $senderInfo = [
+            'name' => 'shanker reddy', // Replace with your sender's name
+            'email' => 'mereddy.shanker@gmail.com', // Replace with your sender's email address
+        ];
 
         // Set the area code to FRONTEND
-        $this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
+        //$this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
 
 
         // Create the email transport
         $this->transportBuilder->setTemplateIdentifier($templateId)
         ->setTemplateOptions(['area' => \Magento\Framework\App\Area::AREA_FRONTEND, 'store' => $this->storeManager->getStore()->getId()])
         ->setTemplateVars($templateVars)
+        ->setFrom($senderInfo) 
         ->addTo($recipientEmail)
         ->getTransport()
         ->sendMessage();
