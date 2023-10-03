@@ -57,8 +57,8 @@ class SendQuoteEmailCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-         // Set the area code to FRONTEND
-         $this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
+        // Set the area code to FRONTEND
+        $this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
 
         $quoteCollection = $this->quoteCollectionFactory->create();
         $quoteIds = $quoteCollection->getAllIds();
@@ -86,7 +86,6 @@ class SendQuoteEmailCommand extends Command
         } else {
             $output->writeln("No quote IDs found.");
         }
-        return 0;
     }
 
     /**
@@ -111,7 +110,7 @@ class SendQuoteEmailCommand extends Command
     }  
     protected function sendEmail($quoteId, $productName, $productPrice, $customer)
     {
-        $recipientEmail = 'mereddy.shanker@gmail.com';
+        $recipientEmail = "mereddy.shanker@gmail.com";
         
         // Load your email template using Magento's email template model
         $templateId = $this->scopeConfig->getValue('Abandonedcart/Abandonedcart/email_template'); 
@@ -123,8 +122,8 @@ class SendQuoteEmailCommand extends Command
             'product_price' => $productPrice,
         ];
         $senderInfo = [
-            'name' => 'shanker reddy', // Replace with your sender's name
-            'email' => 'mereddy.shanker@gmail.com', // Replace with your sender's email address
+            'name' => 'wilsharefarmfood', // Replace with your sender's name
+            'email' => 'mereddy.rajesh9@gmail.com', // Replace with your sender's email address
         ];
 
         // Set the area code to FRONTEND
@@ -135,7 +134,7 @@ class SendQuoteEmailCommand extends Command
         $this->transportBuilder->setTemplateIdentifier($templateId)
         ->setTemplateOptions(['area' => \Magento\Framework\App\Area::AREA_FRONTEND, 'store' => $this->storeManager->getStore()->getId()])
         ->setTemplateVars($templateVars)
-        ->setFrom($senderInfo) 
+        ->setFrom($senderInfo) // Set the sender information here
         ->addTo($recipientEmail)
         ->getTransport()
         ->sendMessage();
