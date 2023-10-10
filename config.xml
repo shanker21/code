@@ -144,3 +144,22 @@ class SendQuoteEmailCommand extends Command
         ->sendMessage();
     }  
 }
+<!-- Your email template HTML -->
+<p>Quote ID: {{var quote_id}}</p>
+<table>
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Product Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{foreach var="product" from=$product_details}}
+        <tr>
+            <td>{{var product.name}}</td>
+            <td>{{var product.price}}</td>
+        </tr>
+        {{/foreach}}
+    </tbody>
+</table>
+
