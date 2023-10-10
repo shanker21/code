@@ -1,395 +1,6 @@
-protected function execute(InputInterface $input, OutputInterface $output)
-{
-    $quoteCollection = $this->quoteCollectionFactory->create();
-    $quoteIds = $quoteCollection->getAllIds();
-
-    if (!empty($quoteIds)) {
-        foreach ($quoteIds as $quoteId) {
-            $output->writeln("Quote ID: " . $quoteId);
-
-            // Load the quote by ID
-            $quote = $this->loadQuoteById($quoteId);
-
-            // Check if the quote exists
-            if ($quote) {
-                // Get quote items
-                $quoteItems = $quote->getAllVisibleItems();
-
-                foreach ($quoteItems as $quoteItem) {
-                    // Access item information
-                    $productName = $quoteItem->getProduct()->getName();
-                    $productPrice = $quoteItem->getProduct()->getFinalPrice();
-                    $quantity = $quoteItem->getQty();
-
-                    $output->writeln("Product Name: " . $productName);
-                    $output->writeln("Product Price: " . $productPrice);
-                    $output->writeln("Quantity: " . $quantity);
-                }
-            } else {
-                $output->writeln("Quote with ID " . $quoteId . " not found.");
-            }
-        }
-    } else {
-        $output->writeln("No quote IDs found.");
-    }
-}
-
-/**
- * Load a quote by its ID.
- *
- * @param int $quoteId
- * @return \Magento\Quote\Model\Quote|false
- */
-protected function loadQuoteById($quoteId)
-{
-    try {
-        $quote = $this->quoteRepository->get($quoteId);
-        return $quote;
-    } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-        return false;
-    }
-}
-============================================
-add email sender
-use Magento\Framework\Mail\Template\SenderResolverInterface;
-use Magento\Framework\Mail\Template\TransportBuilder;
-use Magento\Framework\Mail\Template\Transport;
-use Magento\Framework\App\State;
-
-// ...
-
-protected function execute(InputInterface $input, OutputInterface $output)
-{
-    $quoteCollection = $this->quoteCollectionFactory->create();
-    $quoteIds = $quoteCollection->getAllIds();
-
-    if (!empty($quoteIds)) {
-        foreach ($quoteIds as $quoteId) {
-            $output->writeln("Quote ID: " . $quoteId);
-
-            // Load the quote by ID
-            $quote = $this->loadQuoteById($quoteId);
-
-            // Check if the quote exists
-            if ($quote) {
-                // Get quote items
-                $quoteItems = $quote->getAllVisibleItems();
-
-                // Prepare data for the email template
-                $emailData = [
-                    'items' => [],
-                ];
-
-                foreach ($quoteItems as $quoteItem) {
-                    $productName = $quoteItem->getProduct()->getName();
-                    $productPrice = $quoteItem->getProduct()->getFinalPrice();
-
-                    // Add item data to the email data array
-                    $emailData['items'][] = [
-                        'product_name' => $productName,
-                        'product_price' => $productPrice,
-                    ];
-                }
-
-                // Send email with the data
-                $this->sendEmail($emailData);
-            } else {
-                $output->writeln("Quote with ID " . $quoteId . " not found.");
-            }
-        }
-    } else {
-        $output->writeln("No quote IDs found.");
-    }
-}
-
-// ...
-
-/**
- * Send an email using the provided data.
- *
- * @param array $data
- */
-protected function sendEmail($data)
-{
-    $templateOptions = [
-        'area' => \Magento\Framework\App\Area::AREA_FRONTEND, // or AREA_ADMINHTML for admin emails
-        'store' => $this->storeManager->getDefaultStoreView()->getId(),
-    ];
-
-    $templateVars = [
-        'items' => $data['items'],
-    ];
-
-    $from = ['email' => 'sender@example.com', 'name' => 'Sender Name'];
-    $to = ['email' => 'recipient@example.com', 'name' => 'Recipient Name'];
-
-    $transport = $this->transportBuilder
-        ->setTemplateIdentifier('your_custom_email_template_identifier')
-        ->setTemplateOptions($templateOptions)
-        ->setTemplateVars($templateVars)
-        ->setFrom($from)
-        ->addTo($to['email'], $to['name'])
-        ->getTransport();
-
-    $transport->sendMessage();
-}
-=============================================
-second method
-protected function execute(InputInterface $input, OutputInterface $output)
-{
-    $quoteCollection = $this->quoteCollectionFactory->create();
-    $quoteIds = $quoteCollection->getAllIds();
-
-    if (!empty($quoteIds)) {
-        foreach ($quoteIds as $quoteId) {
-            $output->writeln("Quote ID: " . $quoteId);
-
-            // Load the quote by ID
-            $quote = $this->loadQuoteById($quoteId);
-
-            // Check if the quote exists
-            if ($quote) {
-                // Get quote items
-                $quoteItems = $quote->getAllVisibleItems();
-
-                foreach ($quoteItems as $quoteItem) {
-                    // Access item information
-                    $productName = $quoteItem->getProduct()->getName();
-                    $productPrice = $quoteItem->getProduct()->getFinalPrice();
-
-                    // Send email
-                    $this->sendQuoteEmail($quoteId, $productName, $productPrice);
-                }
-            } else {
-                $output->writeln("Quote with ID " . $quoteId . " not found.");
-            }
-        }
-    } else {
-        $output->writeln("No quote IDs found.");
-    }
-}
-
-/**
- * Send a quote email using the specified data.
- *
- * @param int $quoteId
- * @param string $productName
- * @param float $productPrice
- */
-protected function sendQuoteEmail($quoteId, $productName, $productPrice)
-{
-    // Load the email template
-    $templateId = 'your_email_template_id_here'; // Replace with the actual template ID
-
-    // Prepare template variables
-    $templateVars = [
-        'quote_id' => $quoteId,
-        'product_name' => $productName,
-        'product_price' => $productPrice,
-    ];
-
-    // Send the email
-    $storeId = $this->storeManager->getStore()->getId();
-    $from = ['email' => 'your_sender_email@example.com', 'name' => 'Your Sender Name'];
-    $to = ['email' => 'recipient_email@example.com', 'name' => 'Recipient Name'];
-
-    $this->transportBuilder
-        ->setTemplateIdentifier($templateId)
-        ->setTemplateOptions(['area' => 'frontend', 'store' => $storeId])
-        ->setTemplateVars($templateVars)
-        ->setFrom($from)
-        ->addTo($to['email'], $to['name'])
-        ->getTransport()
-        ->sendMessage();
-}
-============================
-method-3
-// ... (previous code remains unchanged)
-
-use Magento\Framework\Mail\Template\TransportBuilder;
-use Magento\Framework\App\State;
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
-use Magento\Framework\Mail\Template\SenderResolverInterface;
-use Magento\Framework\Mail\Template\TransportBuilder as FrameworkTransportBuilder;
-
-class SendQuoteEmailCommand extends Command
-{
-    // ... (previous code remains unchanged)
-
-    protected $senderResolver;
-    protected $frameworkTransportBuilder;
-
-    public function __construct(
-        TransportBuilder $transportBuilder,
-        State $appState,
-        StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig,
-        CollectionFactory $quoteCollectionFactory,
-        SenderResolverInterface $senderResolver,
-        FrameworkTransportBuilder $frameworkTransportBuilder
-    ) {
-        parent::__construct();
-        $this->transportBuilder = $transportBuilder;
-        $this->appState = $appState;
-        $this->storeManager = $storeManager;
-        $this->scopeConfig = $scopeConfig;
-        $this->quoteCollectionFactory = $quoteCollectionFactory;
-        $this->senderResolver = $senderResolver;
-        $this->frameworkTransportBuilder = $frameworkTransportBuilder;
-    }
-
-    // ... (configure and execute methods remain unchanged)
-
-    protected function sendEmail($quoteId, $productName, $productPrice)
-    {
-        // Load the email template from the admin panel
-        $templateId = 'your_email_template_id_here'; // Replace with the actual template ID
-
-        // Get the sender email address and name
-        $sender = $this->senderResolver->resolve($templateId);
-
-        // Set the template variables
-        $templateVars = [
-            'quote_id' => $quoteId,
-            'product_name' => $productName,
-            'product_price' => $productPrice,
-        ];
-
-        // Create the email transport
-        $transport = $this->frameworkTransportBuilder
-            ->setTemplateIdentifier($templateId)
-            ->setTemplateOptions(['area' => \Magento\Framework\App\Area::AREA_FRONTEND, 'store' => $this->storeManager->getStore()->getId()])
-            ->setTemplateVars($templateVars)
-            ->setFrom($sender)
-            ->addTo('recipient@example.com') // Replace with the recipient's email address
-            ->getTransport();
-
-        // Send the email
-        $transport->sendMessage();
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $quoteCollection = $this->quoteCollectionFactory->create();
-        $quoteIds = $quoteCollection->getAllIds();
-
-        if (!empty($quoteIds)) {
-            foreach ($quoteIds as $quoteId) {
-                // Load the quote by ID
-                $quote = $this->loadQuoteById($quoteId);
-
-                // Check if the quote exists
-                if ($quote) {
-                    // Get quote items
-                    $quoteItems = $quote->getAllVisibleItems();
-
-                    foreach ($quoteItems as $quoteItem) {
-                        // Access item information
-                        $productName = $quoteItem->getProduct()->getName();
-                        $productPrice = $quoteItem->getProduct()->getFinalPrice();
-                        $quantity = $quoteItem->getQty();
-
-                        $output->writeln("Quote ID: " . $quoteId);
-                        $output->writeln("Product Name: " . $productName);
-                        $output->writeln("Product Price: " . $productPrice);
-                        $output->writeln("Quantity: " . $quantity);
-
-                        // Send the email with quote details
-                        $this->sendEmail($quoteId, $productName, $productPrice);
-                    }
-                } else {
-                    $output->writeln("Quote with ID " . $quoteId . " not found.");
-                }
-            }
-        } else {
-            $output->writeln("No quote IDs found.");
-        }
-    }
-
-    // ... (loadQuoteById method remains unchanged)
-}
-
-=========================================
-add the email from admin
-protected function execute(InputInterface $input, OutputInterface $output)
-{
-    $quoteCollection = $this->quoteCollectionFactory->create();
-    $quoteIds = $quoteCollection->getAllIds();
-
-    if (!empty($quoteIds)) {
-        foreach ($quoteIds as $quoteId) {
-            $output->writeln("Quote ID: " . $quoteId);
-
-            // Load the quote by ID
-            $quote = $this->loadQuoteById($quoteId);
-
-            // Check if the quote exists
-            if ($quote) {
-                // Get quote items
-                $quoteItems = $quote->getAllVisibleItems();
-
-                foreach ($quoteItems as $quoteItem) {
-                    // Access item information
-                    $productName = $quoteItem->getProduct()->getName();
-                    $productPrice = $quoteItem->getProduct()->getFinalPrice();
-                    $quantity = $quoteItem->getQty();
-
-                    // Send email with quote data to the configured email address
-                    $this->sendEmail($quoteId, $productName, $productPrice);
-                }
-            } else {
-                $output->writeln("Quote with ID " . $quoteId . " not found.");
-            }
-        }
-    } else {
-        $output->writeln("No quote IDs found.");
-    }
-}
-
-/**
- * Send an email with quote data.
- *
- * @param int $quoteId
- * @param string $productName
- * @param float $productPrice
- */
-protected function sendEmail($quoteId, $productName, $productPrice)
-{
-    $recipientEmail = $this->scopeConfig->getValue(self::XML_PATH_ABANDONED_EMAIL);
-
-    // Load your email template using Magento's email template model
-    $templateId = 'your_email_template_id_here'; // Replace with your actual template ID
-
-    // Prepare email variables
-    $templateVars = [
-        'quote_id' => $quoteId,
-        'product_name' => $productName,
-        'product_price' => $productPrice,
-    ];
-
-    // Sender information
-    $senderInfo = [
-        'name' => 'Your Sender Name',
-        'email' => 'your_sender_email@example.com',
-    ];
-
-    // Send the email
-    $this->transportBuilder->setTemplateIdentifier($templateId)
-        ->setTemplateOptions(['area' => \Magento\Framework\App\Area::AREA_FRONTEND, 'store' => $this->storeManager->getStore()->getId()])
-        ->setTemplateVars($templateVars)
-        ->setFrom($senderInfo)
-        ->addTo($recipientEmail)
-        ->getTransport()
-        ->sendMessage();
-}
-
-========================================================================
-testing the code
 <?php
 
-namespace MDC\Abandoncart\Console\Command;
+namespace MDC\Abandonedcart\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -400,7 +11,8 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
 use Magento\Framework\Mail\Template\SenderResolverInterface;
-//use Magento\Framework\Mail\Template\TransportBuilder as FrameworkTransportBuilder;
+use Magento\Customer\Api\CustomerRepositoryInterface;
+
 class SendQuoteEmailCommand extends Command
 {
     protected $transportBuilder;
@@ -411,9 +23,9 @@ class SendQuoteEmailCommand extends Command
     protected $quoteCollectionFactory;
     protected $quoteRepository;
     protected $senderResolver;
-    protected $frameworkTransportBuilder;
+    protected $customerRepository;
+
     
-    const XML_PATH_ABANDONED_EMAIL = 'Abandoncart/Abandoncart/email';
 
     public function __construct(
         TransportBuilder $transportBuilder,
@@ -422,8 +34,8 @@ class SendQuoteEmailCommand extends Command
         ScopeConfigInterface $scopeConfig,
         CollectionFactory $quoteCollectionFactory,
         \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
-        SenderResolverInterface $senderResolver
-        //FrameworkTransportBuilder $frameworkTransportBuilder
+        SenderResolverInterface $senderResolver,
+        CustomerRepositoryInterface $customerRepository
     ) {
         parent::__construct();
         $this->transportBuilder = $transportBuilder;
@@ -433,33 +45,44 @@ class SendQuoteEmailCommand extends Command
         $this->quoteCollectionFactory = $quoteCollectionFactory;
         $this->quoteRepository = $quoteRepository;
         $this->senderResolver = $senderResolver;
-        //$this->frameworkTransportBuilder = $frameworkTransportBuilder;
+        $this->customerRepository = $customerRepository;
+        
     }
 
     protected function configure()
     {
-        $this->setName('mdcabandonedcart:sendquoteemail')
+        $this->setName('mdcabandoncart:sendquoteemail')
             ->setDescription('Send quote details via email.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // Set the area code to FRONTEND
+        $this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
+
         $quoteCollection = $this->quoteCollectionFactory->create();
         $quoteIds = $quoteCollection->getAllIds();
         if (!empty($quoteIds)) {
             foreach ($quoteIds as $quoteId) {
                 // Load the quote by ID
-                $quote = $this->loadQuoteById($quoteId);
+                list($quote, $customer) = $this->loadQuoteById($quoteId);
                 // Check if the quote exists
-                if ($quote) {
+                if ($quote && $quote->getIsActive()) {
                     // Get quote items
-                    $quoteItems = $quote->getAllVisibleItems();
-                    foreach ($quoteItems as $quoteItem) {
+                    $items = $quote->getAllItems();
+                    $productDetails = [];
+                    foreach ($items as $item) {
                         // Access item information
                         $productName = $quoteItem->getProduct()->getName();
                         $productPrice = $quoteItem->getProduct()->getFinalPrice();
-                        // Send the email with quote details
-                        $this->sendEmail($quoteId, $productName, $productPrice);
+                        $productDetails[] = [
+                            'name' => $productName,
+                            'price' => $productPrice,
+                        ];
+                        // Send the email with quote details to the customer
+                        if ($customer && !empty($productDetails)) {
+                            $this->sendEmail($quoteId, $productDetails, $customer);
+                        }
                     }
                 } else {
                     $output->writeln("Quote with ID " . $quoteId . " not found.");
@@ -480,34 +103,44 @@ class SendQuoteEmailCommand extends Command
     {
         try {
             $quote = $this->quoteRepository->get($quoteId);
-            return $quote;
+            $customerId = $quote->getCustomerId();
+            if ($customerId) {
+                $customer = $this->customerRepository->getById($customerId);
+                return [$quote, $customer];
+            }
+            return [$quote, null]; // Return the quote and null for customer if no customer is associated.
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-            return false;
+            return [null, null]; // Return null for both quote and customer if the quote doesn't exist.
         }
     }  
-    protected function sendEmail($quoteId, $productName, $productPrice)
+    protected function sendEmail($quoteId, $productDetails, $customer)
     {
-        $recipientEmail = $this->scopeConfig->getValue(self::XML_PATH_ABANDONED_EMAIL);
-
+        $recipientEmail = "mereddy.shanker@gmail.com";
+        
         // Load your email template using Magento's email template model
-        $templateId = 'Abandoned Cart'; 
+        $templateId = $this->scopeConfig->getValue('Abandonedcart/Abandonedcart/email_template'); 
 
         // Set the template variables
         $templateVars = [
             'quote_id' => $quoteId,
-            'product_name' => $productName,
-            'product_price' => $productPrice,
+            'product_details' => $productDetails,
         ];
+        $senderInfo = [
+            'name' => 'wilsharefarmfood', // Replace with your sender's name
+            'email' => 'mereddy.rajesh9@gmail.com', // Replace with your sender's email address
+        ];
+
+        // Set the area code to FRONTEND
+        //$this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
+
 
         // Create the email transport
         $this->transportBuilder->setTemplateIdentifier($templateId)
         ->setTemplateOptions(['area' => \Magento\Framework\App\Area::AREA_FRONTEND, 'store' => $this->storeManager->getStore()->getId()])
         ->setTemplateVars($templateVars)
+        ->setFrom($senderInfo) // Set the sender information here
         ->addTo($recipientEmail)
         ->getTransport()
         ->sendMessage();
     }  
 }
-In State.php line 153:
-                        
-  Area code is not set
