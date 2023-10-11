@@ -51,38 +51,46 @@ class SendQuoteEmailCommand extends Command
 
     protected function configure()
     {
-        $this->setName('mdcabandoncart:sendquoteemail')
+        $this->setName('mdcabandonedcart:sendquoteemail')
             ->setDescription('Send quote details via email.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/product.log');       
+        $logger = new \Zend_Log();$logger->addWriter($writer);
         // Set the area code to FRONTEND
         $this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
-
+    
         $quoteCollection = $this->quoteCollectionFactory->create();
         $quoteIds = $quoteCollection->getAllIds();
+        
         if (!empty($quoteIds)) {
             foreach ($quoteIds as $quoteId) {
                 // Load the quote by ID
                 list($quote, $customer) = $this->loadQuoteById($quoteId);
+                
                 // Check if the quote exists
                 if ($quote && $quote->getIsActive()) {
                     // Get quote items
                     $items = $quote->getAllItems();
-                    $productDetails = [];
+                    // Initialize an array to store product information
+                    $productsInfo = [];
+                    $logger->info("line number 78".print_r( $productsInfo,true));
                     foreach ($items as $item) {
                         // Access item information
-                        $productName = $quoteItem->getProduct()->getName();
-                        $productPrice = $quoteItem->getProduct()->getFinalPrice();
-                        $productDetails[] = [
-                            'name' => $productName,
-                            'price' => $productPrice,
-                        ];
-                        // Send the email with quote details to the customer
-                        if ($customer && !empty($productDetails)) {
-                            $this->sendEmail($quoteId, $productDetails, $customer);
-                        }
+                        $productName = $item->getProduct()->getName();
+                        $logger->info($productName);
+                        $productPrice = $item->getProduct()->getFinalPrice();
+                        // Add product details to the array
+                    $productsInfo[] = "Product Name: $productName, Product Price: $productPrice";
+
+                        $logger->info("line number 88".print_r( $productsInfo,true));
+                    }
+    
+                    // Send a single email with all quote details to the customer
+                    if ($customer && !empty($productsInfo)) {
+                        $this->sendEmail($quoteId, $productsInfo, $customer);
                     }
                 } else {
                     $output->writeln("Quote with ID " . $quoteId . " not found.");
@@ -92,13 +100,6 @@ class SendQuoteEmailCommand extends Command
             $output->writeln("No quote IDs found.");
         }
     }
-
-    /**
-     * Load a quote by its ID.
-     *
-     * @param int $quoteId
-     * @return \Magento\Quote\Model\Quote|false
-     */
     protected function loadQuoteById($quoteId)
     {
         try {
@@ -113,27 +114,23 @@ class SendQuoteEmailCommand extends Command
             return [null, null]; // Return null for both quote and customer if the quote doesn't exist.
         }
     }  
-    protected function sendEmail($quoteId, $productDetails, $customer)
+    protected function sendEmail($quoteId, $productsInfo, $customer)
     {
         $recipientEmail = "mereddy.shanker@gmail.com";
         
         // Load your email template using Magento's email template model
         $templateId = $this->scopeConfig->getValue('Abandonedcart/Abandonedcart/email_template'); 
-
+    
         // Set the template variables
         $templateVars = [
             'quote_id' => $quoteId,
-            'product_details' => $productDetails,
+            'products_info' => implode("\n", $productsInfo),
         ];
         $senderInfo = [
             'name' => 'wilsharefarmfood', // Replace with your sender's name
             'email' => 'mereddy.rajesh9@gmail.com', // Replace with your sender's email address
         ];
-
-        // Set the area code to FRONTEND
-        //$this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
-
-
+    
         // Create the email transport
         $this->transportBuilder->setTemplateIdentifier($templateId)
         ->setTemplateOptions(['area' => \Magento\Framework\App\Area::AREA_FRONTEND, 'store' => $this->storeManager->getStore()->getId()])
@@ -142,8 +139,8 @@ class SendQuoteEmailCommand extends Command
         ->addTo($recipientEmail)
         ->getTransport()
         ->sendMessage();
-    }  
-}
+    }
+}    
 <!-- Your email template HTML -->
 <p>Quote ID: {{var quote_id}}</p>
 <table>
