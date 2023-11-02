@@ -10,7 +10,7 @@ use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Framework\Mail\Template\SenderResolverInterface;
 use Magento\Framework\Reflection\DataObjectProcessor;
 use Magedelight\Backend\App\Action\Context;
-use MDC\CallerCustomer\Model\CallerCustomer;
+use MDC\CallerCustomer\Model\CallerCustomerFactory;
 use Magento\Framework\DataObject;
 
 class SaveCaller extends \Magedelight\Backend\App\Action
@@ -44,7 +44,7 @@ class SaveCaller extends \Magedelight\Backend\App\Action
         \Psr\Log\LoggerInterface $logger,
         \MDC\ConsentManagement\Model\ConsentAttributesRepository $consentAttributesRepository,
         \MDC\ConsentManagement\Model\ConsentAttributes $consentAttributesModel,
-        CallerCustomer $callerCustomer,
+        CallerCustomerFactory $callerCustomer,
         DataObject $dataObject,
         \Magento\Framework\Url $urlHelper,
         \MDC\CallerCustomer\Controller\Sellerhtml\Account\CreatePost $createPost,
@@ -82,8 +82,8 @@ class SaveCaller extends \Magedelight\Backend\App\Action
 
         $postData = $this->getRequest()->getPostValue();
         $response = $this->dataobject;
-        $callerExistObj = $this->callerCustomer->checkExistCallerCustomer($postData['firstname'], $postData['lastname'], $postData['postcode']);
-        $callerCollection = $this->callerCustomer->getCollection()->addFieldToFilter('relation_id', $callerExistObj->getId());
+        $callerExistObj = $this->callerCustomer->create()->checkExistCallerCustomer($postData['firstname'], $postData['lastname'], $postData['postcode']);
+        $callerCollection = $this->callerCustomer->create()->getCollection()->addFieldToFilter('relation_id', $callerExistObj->getId());
         if(!empty($postData)){
             if (isset($postData['is_setup_online_account'])) {
                 $accountStatus = $this->createPost->isCallerOnlineNewAccountExist($postData);
