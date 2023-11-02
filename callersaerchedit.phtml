@@ -1,0 +1,348 @@
+<?php
+   $callerId = $block->getData('caller_id');
+   $callerData = $block->getCallerData($callerId);
+   $title = $block->toOptionArray();
+   ?>
+<?php if(!empty($callerData)):?>
+<div class="edit-profile edit-prof-popup">
+   <form action="<?= $block->getUrl('loginascustomer/index/savecaller');?>" method="post" id="form-validate" autocomplete="off" data-login-as-customer-js="login-as-customer" data-mage-init='{"validation": {}}'>
+      <button type="submit" id="saveAndClose" class="action submit primary edt-top-btn save-endcustomer" title="<?= $escaper->escapeHtmlAttr(__('Save')) ?>">
+      <span><?= $escaper->escapeHtml(__('Save')) ?></span>
+      </button>
+
+      <div class="fields">
+         <h3 class="edt-d-tit"><?= $block->escapeHtml("Details");?></h3>
+         <input type="hidden" name="child_id" value="<?= $block->escapeHtml($callerId);?>">
+         <input type="hidden" name="consent_id" value="<?=$callerData[0]['consent_id']?>" />
+         <fieldset class="fieldset edit info">
+            <div class="control">
+               <div class="field title">
+                  <select name="title">
+                     <?php foreach ($title as $value):?>
+                     <option value="<?= $block->escapeHtml($value['label']);?>" <?php if($callerData[0]['title']==$value['label']) echo "selected" ?>><?= $block->escapeHtml($value['label']);?></option>
+                     <?php endforeach;?>
+                  </select>
+               </div>
+            </div>
+            <div class="control">
+               <div class="field firstname">
+                  <input type="text" name="firstname" value="<?= $block->escapeHtml($callerData[0]['firstname']);?>" title="<?= $block->escapeHtml("Firstname");?>" class="input-text" placeholder = "<?= $block->escapeHtml("Firstname");?>" data-validate="{required:true}" data-msg-required="First name can't be empty" autocomplete="off" aria-required="true"  maxlength="50" />
+               </div>
+               <div class="field lastname">
+                  <input type="text" name="lastname" value="<?= $block->escapeHtml($callerData[0]['lastname']);?>" title="<?= $block->escapeHtml("Lastname");?>" class="input-text" placeholder="<?= $block->escapeHtml("Lastname");?>" data-validate="{required:true}" data-msg-required="Last name can't be empty" autocomplete="off" aria-required="true"  maxlength="50" />
+               </div>
+            </div>
+            <div class="control-center">
+               <div class="control">
+                  <div class="field phone-number">
+                     <input type="text" name="phone_no" value="<?= $block->escapeHtml($callerData[0]['phone_no']);?>" title="<?= $block->escapeHtml("Phone Number");?>" class="input-text" placeholder="<?= $block->escapeHtml("Phone Number");?>"  maxlength="15"/>
+                  </div>
+                  <div class="field alternate-phone-number">
+                     <input type="text" name="alt_phone_no" value="<?= $block->escapeHtml($callerData[0]['alt_phone_no']);?>" title="<?= $block->escapeHtml("Alternate Phone Number");?>" class="input-text" placeholder="<?= $block->escapeHtml("Alternate Phone Number");?>"  maxlength="15">
+                  </div>
+               </div>
+               <div class="control">
+                  <div class="field email">
+                     <input type="text" name="email" value="<?= $block->escapeHtml($callerData[0]['email']);?>" title="<?= $block->escapeHtml("Email");?>" class="input-text" placeholder="<?= $block->escapeHtml("Email");?>" data-validate="{'validate-email':true}" data-msg-validate-email="Email is not a valid email"  maxlength="320" />
+                  </div>
+                  <?php $customer = $block->customerExists($callerData[0]['email']);?>
+                  <?php if (!$customer):?>
+                  <div class="field is_setup_online_account">
+                     <input type="checkbox"
+                        name="is_setup_online_account"
+                        title="<?= $escaper->escapeHtmlAttr(__('Set up online account')) ?>"
+                        value="1"
+                        id="is_setup_online_account_<?=$callerId?>"
+                        />
+                     <label for="is_setup_online_account_<?=$callerId?>" class="label">
+                     <?= $escaper->escapeHtml(__('Set up online account')) ?>
+                     </label>
+                  </div>
+                  <?php endif;?>
+               </div>
+            </div>
+            <p class="postcode-error" style="display:none; color:red">Please Enter Valid Postcode</p>
+               
+            <div class="control">
+               <div class="field postcode">
+                  <input type="text" name="postcode" value="<?= $block->escapeHtml($callerData[0]['postcode']);?>" title="<?= $block->escapeHtml("Postcode");?>" class="input-text" id="postcode" placeholder="<?= $block->escapeHtml("Postcode");?>" data-validate="{'required':true, 'validate-zip-international':true}"
+                     data-msg-required="Post code can't be empty"  maxlength="8" oninput="this.value = this.value.toUpperCase()"/>
+               </div>
+            </div>
+         </fieldset>
+      </div>
+      <div class="consent">
+            <div class="prof-title-acco" id="prof-title-acco-<?= $block->escapeHtml($callerId);?>">
+                <div class="pls-mins plusico">
+                    <svg role="img" width="20" height="20">
+                        <use xlink:href="#plus-solid"></use>
+                    </svg>
+                </div>
+                <div class="pls-mins minico">
+                    <svg role="img" width="20" height="20">
+                        <use xlink:href="#minus-solid"></use>
+                    </svg>
+                </div>
+                <h3><?= $block->escapeHtml("Consent");?></h3>
+            </div>
+         <div class="consent-content caller-search-consent-content" id="caller-search-consent-<?= $block->escapeHtml($callerId);?>" style="display: none;">
+            <?php 
+               $allMarketing=0;
+               $allCorrespondence=0;
+               $email=0;
+               $newsletter=0;
+               $product=0;
+               $sms=0;
+               $telephone=0;
+               $telephone_service=0;
+               $telephone_marketing=0;
+               $directMail=0;
+
+               if($callerData[0]['consent_id']){
+                   $consentData = $block->getConsentData($callerData[0]['consent_id']);
+                   $allMarketing = $consentData->getData('opt_out_all_marketing');
+                   $allCorrespondence = $consentData->getData('opt_out_all_correspondence');
+                   $email = $consentData->getData('email');
+                   $newsletter = $consentData->getData('newsletter_email');
+                   $product = $consentData->getData('product_n_service_email');
+                   $sms = $consentData->getData('sms');
+                   $telephone = $consentData->getData('telephone');
+                   $telephone_service = $consentData->getData('market_pref_telephone_service');
+                   $telephone_marketing = $consentData->getData('market_pref_telephone_marketing');
+                   $directMail = $consentData->getData('direct_mail');
+                   
+               }
+               
+               ?>
+            <div class="consent-inner">
+               <ul>
+                  <li>
+                     <input id="caller_edit_marketing_<?=$callerId?>" type="checkbox" name="opt_out_all_marketing" value="1" <?php if($allMarketing){echo "checked";}?> class="caller_marketing" />
+                     <label for="caller_edit_marketing_<?=$callerId?>"><?= $block->esCapeHtml("Opt-out of all marketing")?></label>
+                  </li>
+                  <li>
+                     <input id="caller_edit_email_<?=$callerId?>" type="checkbox" name="consent_email" value="1" <?php if($email){echo "checked";}?> class="group consent_email" />
+                     <label for="caller_edit_email_<?=$callerId?>"><?= $block->esCapeHtml("Email")?></label>
+                     <div class="cont-bl-in">
+                        <div class="consent-check">
+                           <input id="caller_edit_newsletter_<?=$callerId?>" type="checkbox" name="newsletter" value="1" <?php if($newsletter){echo "checked";}?> class="group consent_newsletter" />
+                           <label for="caller_edit_newsletter_<?=$callerId?>"><?= $block->esCapeHtml("Newsletter")?></label>
+                        </div>
+                        <div class="consent-check">
+                           <input id="caller_edit_product_<?=$callerId?>" type="checkbox" name="product" value="1" <?php if($product){echo "checked";}?> class="group consent_product_service" />
+                           <label for="caller_edit_product_<?=$callerId?>"><?= $block->esCapeHtml("Product and services")?></label>
+                        </div>
+                     </div>
+                  </li>
+                  <li>
+                     <input id="caller_edit_sms_<?=$callerId?>" type="checkbox" name="sms" value="1" <?php if($sms){echo "checked";}?> class="group" />
+                     <label for="caller_edit_sms_<?=$callerId?>"><?= $block->esCapeHtml("SMS")?></label>
+                  </li>
+                  <li>
+                     <input id="caller_edit_telephone_<?=$callerId?>" type="checkbox" name="telephone" value="1" <?php if($telephone){echo "checked";}?> class="group sc_edit_telephone" />
+                     <label for="caller_edit_telephone_<?=$callerId?>"><?= $block->esCapeHtml("Telephone")?></label>
+                     <div class="cont-bl-in">
+                        <div class="consent-check">
+                            <input id="caller_edit_telephone_service_<?=$callerId?>" type="checkbox" name="market_pref_telephone_service" value="1" <?php if($telephone_service){echo "checked";}?> class="sc_edit_tel_child sc_edit_tel_ser" />
+                            <label for="caller_edit_telephone_service_<?=$callerId?>"><?= $block->esCapeHtml("Service")?></label>
+                        </div>
+                        <div class="consent-check">
+                            <input id="caller_edit_telephone_marketing_<?=$callerId?>" type="checkbox" name="market_pref_telephone_marketing" value="1" <?php if($telephone_marketing){echo "checked";}?> class="sc_edit_tel_child sc_edit_tel_mark" />
+                            <label for="caller_edit_telephone_marketing_<?=$callerId?>"><?= $block->esCapeHtml("Marketing")?></label>
+                        </div>
+                     </div>
+                  </li>
+                  <li>
+                     <input id="caller_edit_direct_mail_<?=$callerId?>" type="checkbox" name="direct_mail" value="1" <?php if($directMail){echo "checked";}?> class="group" />
+                     <label for="caller_edit_direct_mail_<?=$callerId?>"><?= $block->esCapeHtml("Direct mail")?></label>
+                  </li>
+                  <li>
+                     <input id="caller_edit_correspondence_<?=$callerId?>" type="checkbox" name="opt_out_all_correspondence" value="1" <?php if($allCorrespondence){echo "checked";}?> class="caller_correspondence"/>
+                     <label for="caller_edit_correspondence_<?=$callerId?>"><?= $block->esCapeHtml("Opt-out of all correspondence")?></label>
+                  </li>
+               </ul>
+            </div>
+         </div>
+      </div>
+      <input type="hidden" name="reactivateChildAccountUrl" class="reactivateChildAccountUrl" value="<?php echo $block->getReactivateChildAccountUrl(); ?>">
+      <input type="hidden" name="reactivateCallerAccountUrl" class="reactivateCallerAccountUrl" value="<?php echo $block->getReactivateCallerAccountUrl(); ?>" data-callerId="<?php echo $block->getData('caller_id');?>">
+      <input type="hidden" name="deactivateCallerAccountUrl" class="deactivateCallerAccountUrl" value="<?php echo $block->getDeactivateCallerAccountUrl(); ?>">
+      <div class="actions-toolbar">
+         <div class="primary">
+            <button type="submit"
+               class="action submit primary save-endcustomer"
+               id="saveAndClose"
+               title="<?= $escaper->escapeHtmlAttr(__('Save')) ?>">
+            <span><?= $escaper->escapeHtml(__('Save')) ?></span>
+            </button>
+         </div>
+         <?php if ($callerData[0]['block'] == 0) { ?>
+            <div class="secondary">
+               <a class="action secondary deactivate-act-btn"
+                  href="#" data-caller-id="<?php echo $callerData[0]['relation_id'] ?>">
+               <?= $escaper->escapeHtml(__('Deactivate account')) ?>
+               </a>
+            </div>
+            <div class="secondary">
+               <a class="action secondary reactivate-act-btn"
+                  href="#" style="display: none;">
+               <?= $escaper->escapeHtml(__('Reactivate account')) ?>
+               </a>
+            </div>
+         <?php } ?>
+         <?php if ($callerData[0]['block'] == 1) { ?>
+            <div class="secondary">
+               <a class="action secondary deactivate-act-btn"
+                  href="#"  style="display: none;" data-caller-id="<?php echo $callerData[0]['relation_id'] ?>">
+               <?= $escaper->escapeHtml(__('Deactivate account')) ?>
+               </a>
+            </div>
+            <div class="secondary">
+               <a class="action secondary reactivate-act-btn"
+                  href="#">
+               <?= $escaper->escapeHtml(__('Reactivate account')) ?>
+               </a>
+            </div>
+         <?php } ?>
+         <div class="caller-message" id="caller-message" style="display: none;"></div>
+      </div>
+   </form>
+</div>
+<script type="text/javascript">
+require(['jquery',
+    'jquery/ui',
+    'jquery/validate',
+    'mage/translate','mage/validation'], function($,model) {
+       
+       $(document).on('click', '.caller_marketing', function () {
+           if($(this).is(":checked")) {
+               $('.group').prop('checked', false);
+               $('.caller_correspondence').prop('checked', false);
+               $(this).prop('checked', true);
+           }   
+       });
+
+      $(document).on('click', 'button#saveAndClose', function (event) {
+         event.preventDefault();
+         var isValid = $('#form-validate').valid();
+      
+         if (isValid) {
+            // Serialize form data
+            var formData = $('#form-validate').serialize();
+            $.ajax({
+            type: 'POST',
+            url: '<?php echo $block->getUrl('loginascustomer/index/savecaller');?>',
+            data: formData,
+            dataType: 'json',
+            success: function (response) {
+               if (response.success) {
+                  if(response.message) {
+                    $('.caller-message').show();
+                    $('.caller-message').html(response.message);
+                    $('.caller-message').css('color','red');
+                  } else {
+                     $("button.action-close").trigger("click");
+                  }
+               }
+         }
+         
+      });
+   
+       $(document).on('click', '.group', function () {
+           if($(this).is(":checked")) {
+               $('.caller_marketing').prop('checked', false);
+               $('.caller_correspondence').prop('checked', false);
+               $(this).prop('checked', true);
+           }   
+       });
+
+       $(document).on('click', '.caller_correspondence', function () {
+         if($(this).is(":checked")) {
+            $('.caller_marketing').prop('checked', false);
+            $('.group').prop('checked', false);
+            $(this).prop('checked', true);
+         }   
+      });
+       $(document).on('input', '#postcode',function(){
+                var regexp = /^[A-Z]{1,2}[0-9RCHNQ][0-9A-Z]?\s?[0-9][ABD-HJLNP-UW-Z]{2}$|^[A-Z]{2}-?[0-9]{4}$/;
+                var postcode = $(this).val();
+                var zipcode = postcode.toUpperCase();
+                if(regexp.test(zipcode)){
+                    $('.postcode-error').hide();
+                    $('.save-endcustomer').attr('disabled', false);
+                }
+                else{
+                    $(".postcode-error").show();
+                    $('.save-endcustomer').attr('disabled', 'disabled');
+                }
+            });
+   });
+</script>
+
+<script type="text/x-magento-init">
+   {
+       "[data-login-as-customer-js='login-as-customer']": {
+           "loginAsCustomer": {
+               "deactivateCallerAccountUrl": "<?php echo $block->getDeactivateCallerAccountUrl(); ?>",
+               "reactivateCallerAccountUrl": "<?php echo $block->getReactivateCallerAccountUrl(); ?>",
+               "reactivateChildAccountUrl": "<?php echo $block->getReactivateChildAccountUrl(); ?>",
+               "callerId": "<?php echo $block->getData('caller_id'); ?>"
+           }
+       }
+   }
+</script>
+<script type="text/javascript">
+   require(["jquery"], function($) {    
+       $(document).on('click', '.consent_email', function () {
+           if($(this).is(":checked")) {
+               $('.consent_newsletter').prop('checked', true);
+               $('.consent_product_service').prop('checked', true);
+           }else{
+               $('.consent_newsletter').prop('checked', false);
+               $('.consent_product_service').prop('checked', false);
+           }   
+       });
+       $(document).on('click', '.consent_newsletter, .consent_product_service', function () {
+           if($(this).is(":checked")) {
+               $('.consent_email').prop('checked', true);
+           }else{
+               if(!$('.consent_newsletter').is(":checked") && !$('.consent_product_service').is(":checked")) {
+                  $('.consent_email').prop('checked', false);               
+               } 
+               
+           }   
+       });
+       $(document).on('click', '.sc_edit_telephone', function () {
+           if($(this).is(":checked")) {
+               $('.sc_edit_tel_mark').prop('checked', true);
+               $('.sc_edit_tel_ser').prop('checked', true);
+           }else{
+               $('.sc_edit_tel_mark').prop('checked', false);
+               $('.sc_edit_tel_ser').prop('checked', false);
+           }   
+       });
+       $(document).on('click', '.sc_edit_tel_mark, .sc_edit_tel_ser', function () {
+           if($(this).is(":checked")) {
+               $('.sc_edit_telephone').prop('checked', true);
+           }else{
+                if(!$('.sc_edit_tel_ser').is(":checked") && !$('.sc_edit_tel_mark').is(":checked")) {
+                    $('.sc_edit_telephone').prop('checked', false);               
+                }   
+           }   
+       });
+   });
+</script>
+<script type="text/javascript">
+require(["jquery"], function($) {
+    var callerId = '<?php echo $callerId; ?>';    
+    $(document).on('click', '#prof-title-acco-'+callerId, function () {
+        $('div#caller-search-consent-'+callerId).toggle(500);
+         if($(this).hasClass("active") == false){
+            $(this).addClass("active");
+         } else {
+            $(this).removeClass("active");
+         }
+    });
+});
+</script>
+<?php endif;?>
