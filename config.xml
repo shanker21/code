@@ -160,3 +160,12 @@ class SendQuoteEmailCommand extends Command
     </tbody>
 </table>
 
+if (count($callerCustomerCollection) > 0) {
+                $responseData = [
+                    'status' => false, 
+                    'message' => __('A customer already exists with the provided First Name, Last Name, and Postcode.'),
+                    'redirect' => false
+                ];
+                $resultJson->setData($responseData);
+                return $resultJson;
+            }
