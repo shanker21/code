@@ -369,3 +369,12 @@ class SaveCaller extends \Magedelight\Backend\App\Action
     }
 
 }
+if (count($callerCollection) > 0) {
+                $responseData = [
+                    'status' => false, 
+                    'message' => __('A caller already exists with the provided First Name, Last Name, and Postcode.'),
+                    'redirect' => false
+                ];
+                $resultJson->setData($responseData);
+                return $resultJson;
+            }
