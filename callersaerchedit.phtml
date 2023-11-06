@@ -5,8 +5,8 @@
    ?>
 <?php if(!empty($callerData)):?>
 <div class="edit-profile edit-prof-popup">
-   <form action="<?= $block->getUrl('loginascustomer/index/savecaller');?>" method="post" id="form-validate" autocomplete="off" data-login-as-customer-js="login-as-customer" data-mage-init='{"validation": {}}'>
-      <button type="submit" id="saveAndClose" class="action submit primary edt-top-btn save-endcustomer" title="<?= $escaper->escapeHtmlAttr(__('Save')) ?>">
+   <form class="edit-caller-profile-<?=$callerId;?>" action="<?= $block->getUrl('loginascustomer/index/savecaller');?>" method="post" id="form-validate" autocomplete="off" data-login-as-customer-js="login-as-customer" data-mage-init='{"validation": {}}'>
+      <button type="submit" id="<?=$callerId;?>" class="action submit primary edt-top-btn save-endcustomer saveAndClose" title="<?= $escaper->escapeHtmlAttr(__('Save')) ?>">
       <span><?= $escaper->escapeHtml(__('Save')) ?></span>
       </button>
 
@@ -62,7 +62,6 @@
                </div>
             </div>
             <p class="postcode-error" style="display:none; color:red">Please Enter Valid Postcode</p>
-               
             <div class="control">
                <div class="field postcode">
                   <input type="text" name="postcode" value="<?= $block->escapeHtml($callerData[0]['postcode']);?>" title="<?= $block->escapeHtml("Postcode");?>" class="input-text" id="postcode" placeholder="<?= $block->escapeHtml("Postcode");?>" data-validate="{'required':true, 'validate-zip-international':true}"
@@ -168,10 +167,11 @@
       <input type="hidden" name="reactivateCallerAccountUrl" class="reactivateCallerAccountUrl" value="<?php echo $block->getReactivateCallerAccountUrl(); ?>" data-callerId="<?php echo $block->getData('caller_id');?>">
       <input type="hidden" name="deactivateCallerAccountUrl" class="deactivateCallerAccountUrl" value="<?php echo $block->getDeactivateCallerAccountUrl(); ?>">
       <div class="actions-toolbar">
+      <div class="caller-message" id="caller-message" style="display: none;"></div>
          <div class="primary">
             <button type="submit"
-               class="action submit primary save-endcustomer"
-               id="saveAndClose"
+               class="action submit primary save-endcustomer saveAndClose"
+               id="<?=$callerId;?>"
                title="<?= $escaper->escapeHtmlAttr(__('Save')) ?>">
             <span><?= $escaper->escapeHtml(__('Save')) ?></span>
             </button>
@@ -204,15 +204,16 @@
                </a>
             </div>
          <?php } ?>
-         <div class="caller-message" id="caller-message" style="display: none;"></div>
+         <!-- <div class="login-as-caller-customer-message" id="login-as-caller-customer-message" style="display: none;margin-top:5px;"></div> -->
       </div>
    </form>
 </div>
 <script type="text/javascript">
-require(['jquery',
+   require(['jquery',
     'jquery/ui',
     'jquery/validate',
     'mage/translate','mage/validation'], function($,model) {
+  
        
        $(document).on('click', '.caller_marketing', function () {
            if($(this).is(":checked")) {
@@ -222,32 +223,38 @@ require(['jquery',
            }   
        });
 
-      $(document).on('click', 'button#saveAndClose', function (event) {
-         event.preventDefault();
-         var isValid = $('#form-validate').valid();
-      
+      $(document).on('click', 'button.saveAndClose', function (e) {
+         var isValid = $('#form-validate').valid(); 
+         var id = $(this).attr('id');
+         //console.log(id);
+         // if (!isValid) {
+         //    event.preventDefault(); 
+         // } else {
+         //    $("button.action-close").trigger("click"); 
+         // }
          if (isValid) {
-            // Serialize form data
-            var formData = $('#form-validate').serialize();
+            e.preventDefault();
+            e.stopImmediatePropagation();
             $.ajax({
-            type: 'POST',
-            url: '<?php echo $block->getUrl('loginascustomer/index/savecaller');?>',
-            data: formData,
-            dataType: 'json',
-            success: function (response) {
-               if (response.success) {
-                  if(response.message) {
-                    $('.caller-message').show();
-                    $('.caller-message').html(response.message);
-                    $('.caller-message').css('color','red');
-                  } else {
+               type: 'post',
+               url: '<?php echo $block->getUrl('loginascustomer/index/savecaller');?>',
+               data: $(".edit-caller-profile-"+id).serialize(),
+               cache: false,
+               showLoader: 'true',
+               success: function(response) {
+                  if(response.message){
+                     $('.caller-message').show();
+                     $('.caller-message').html(response.message);
+                     $('.caller-message').css('color','red');
+                  } else{
                      $("button.action-close").trigger("click");
                   }
                }
-         }
-         
+            });
+            return false;
+        }
       });
-   
+      
        $(document).on('click', '.group', function () {
            if($(this).is(":checked")) {
                $('.caller_marketing').prop('checked', false);
@@ -256,13 +263,6 @@ require(['jquery',
            }   
        });
 
-       $(document).on('click', '.caller_correspondence', function () {
-         if($(this).is(":checked")) {
-            $('.caller_marketing').prop('checked', false);
-            $('.group').prop('checked', false);
-            $(this).prop('checked', true);
-         }   
-      });
        $(document).on('input', '#postcode',function(){
                 var regexp = /^[A-Z]{1,2}[0-9RCHNQ][0-9A-Z]?\s?[0-9][ABD-HJLNP-UW-Z]{2}$|^[A-Z]{2}-?[0-9]{4}$/;
                 var postcode = $(this).val();
@@ -276,6 +276,8 @@ require(['jquery',
                     $('.save-endcustomer').attr('disabled', 'disabled');
                 }
             });
+  
+   
    });
 </script>
 
@@ -346,3 +348,4 @@ require(["jquery"], function($) {
 });
 </script>
 <?php endif;?>
+
