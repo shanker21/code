@@ -371,3 +371,29 @@ $("#mobileno").addClass("mobile-check");
         },
         $.mage.__("Please enter a valid number in this field.")
     );
+=====================================================================================
+public function getVendorIdByZipcode($zipcode)
+{
+   
+    $modelcollection = null; // Initialize $modelcollection outside the if blocks
+
+    if(isset($zipcode) && $zipcode != '') {
+        // ... (existing code)
+
+        if (in_array($zipcodeToMatch, $array)) {
+            $modelcollection = $this->zipcodeFactory->create()->getCollection()->addFieldToFilter('zipcode', $zipcodeToMatch);
+
+            foreach ($modelcollection as $col) {
+                return $col->getVendorId();
+            }
+        }
+
+        if($modelcollection && $modelcollection->getSize() == 0){
+            $vendorId = 1;
+            $modelcollection = $this->zipcodeFactory->create()->getCollection()->addFieldToFilter('vendor_id', $vendorId);
+            if($modelcollection->getSize() >= 1){
+                return "1";
+            }
+        }
+    }
+}
