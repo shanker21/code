@@ -372,6 +372,8 @@ $("#mobileno").addClass("mobile-check");
         $.mage.__("Please enter a valid number in this field.")
     );
 =====================================================================================
+var regexpUSAZip = /^\d{5}(?:-\d{4})?$/;
+=============================================================================
     public function getVendorIdByZipcode($zipcode)
     {
         
