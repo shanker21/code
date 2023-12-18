@@ -372,28 +372,178 @@ $("#mobileno").addClass("mobile-check");
         $.mage.__("Please enter a valid number in this field.")
     );
 =====================================================================================
-public function getVendorIdByZipcode($zipcode)
-{
-   
-    $modelcollection = null; // Initialize $modelcollection outside the if blocks
+    public function getVendorIdByZipcode($zipcode)
+    {
+        
+        $ahmedabadVendorZipcodes = array('380001','380002','380003','380004','380005','380006','380007');
+        $hydrabadVendorZipcodes = array('500001','500002','500003','500004','500005','500006','500007');
 
-    if(isset($zipcode) && $zipcode != '') {
-        // ... (existing code)
-
-        if (in_array($zipcodeToMatch, $array)) {
-            $modelcollection = $this->zipcodeFactory->create()->getCollection()->addFieldToFilter('zipcode', $zipcodeToMatch);
-
-            foreach ($modelcollection as $col) {
-                return $col->getVendorId();
+        if(isset($zipcode) && $zipcode != '') {
+            // $zipcode = $_COOKIE['zipcode_availability'];
+            // $zipcode = strtoupper(str_replace(" ","",$zipcode));
+            // $a="";
+            $connection = $this->resourceConnection->getConnection();
+            $table = $connection->getTableName('md_vendor_zipcode');
+            $sql = $connection->select()->from($table,'zipcode');
+            $result = $connection->fetchAll($sql);
+            $array = [];
+            foreach($result as $values){
+                array_push($array,$values['zipcode']);
             }
-        }
+            $zipcode = strtoupper($zipcode);
+            $zipcodeToMatch = substr($zipcode, 0, 5); 
 
-        if($modelcollection && $modelcollection->getSize() == 0){
-            $vendorId = 1;
-            $modelcollection = $this->zipcodeFactory->create()->getCollection()->addFieldToFilter('vendor_id', $vendorId);
-            if($modelcollection->getSize() >= 1){
-                return "1";
-            }
+            if (in_array($zipcodeToMatch, $array)) {
+                $modelcollection = $this->zipcodeFactory->create()->getCollection()->addFieldToFilter('zipcode', $zipcodeToMatch);
+
+                foreach ($modelcollection as $col) {
+                    return $col->getVendorId();
+                }
+                if($modelcollection->getSize() == 0){
+                    $vendorId = 1;
+                    $modelcollection = $this->zipcodeFactory->create()->getCollection()->addFieldToFilter('vendor_id', $vendorId);
+                    if($modelcollection->getSize() >= 1){
+                        return "1";
+                    }
+                }
+            } 
         }
     }
-}
+=================================================================================================================================
+app/design/frontend/Amasty/JetTheme/Magento_CustomerCustomAttributes/templates/customer/address/edit.phtml
+    $(document).ready(function(){
+        $("#telephone").addClass("telephone-custom-message-required");
+        $.validator.addMethod(
+            'telephone-custom-message-required', function (value) {
+                var numberValue = value.replace(/[^0-9\s]/g, '');
+                var formattedValue = '';
+                if (numberValue.length > 3) {
+                    formattedValue += numberValue.substr(0, 3) + '-';
+                    if (numberValue.length > 6) {
+                        formattedValue += numberValue.substr(3, 3) + '-';
+                        formattedValue += numberValue.substr(6);
+                    } else {
+                        formattedValue += numberValue.substr(3);
+                    }
+                } else {
+                    formattedValue = numberValue;
+                }
+
+                $("#telephone").val(formattedValue.substr(0, 12));
+                return /^\d{3}-\d{3}-\d{4}$/.test(formattedValue);
+            }, $.mage.__("This filed is requried.")
+        );
+        $("#telephone").on('input', function() {
+            $(this).valid();
+        });
+   
+    });
+$("#zip").addClass("postcode-format-check");
+    $.validator.addMethod(
+        'postcode-format-check', function (value) {
+            var regexp = /^[A-Z]{1,2}[0-9RCHNQ][0-9A-Z]?\s?[0-9][ABD-HJLNP-UW-Z]{2}$|^[A-Z]{2}-?[0-9]{4}$|^\d{5}(-\d{4})?$/;
+            var zipcode = value.toUpperCase();
+            if(regexp.test(zipcode)) {
+                return true;
+            }
+        },
+        $.mage.__("Please enter a valid postcode.")
+    );
+    $("#updateAddressbtn").click(function(){
+        var postcode = $("#zip").val();
+        postcode = postcode.toUpperCase();
+        var regexp = new RegExp("\\s+");
+        // if(! regexp.test(postcode)) {
+        //     postcode = postcode.replace(/-.*/, '');
+        // }
+        $("#zip").val(postcode);
+===============================================================================
+app/design/frontend/Amasty/JetTheme/Magento_CustomerCustomAttributes/templates/customer/form/edit.phtml
+ $( document ).ready(function () {
+            $("#telephoneno").on("input", function () {
+                var Value = $(this).val();
+                var numberValue = Value.replace(/[^0-9\s]/g, '');
+                var formattedValue = '';
+                if (numberValue.length > 3) {
+                    formattedValue += numberValue.substr(0, 3) + '-';
+                    if (numberValue.length > 6) {
+                        formattedValue += numberValue.substr(3, 3) + '-';
+                        formattedValue += numberValue.substr(6);
+                    } else {
+                        formattedValue += numberValue.substr(3);
+                    }
+                } else {
+                    formattedValue = numberValue;
+                }
+                $(this).val(formattedValue.substr(0, 12));
+            });
+        });
+
+
+        $( document ).ready(function () {
+            $("#mobileno").on("input", function () {
+                var Value = $(this).val();
+                var numberValue = Value.replace(/[^0-9\s]/g, '');
+                var formattedValue = '';
+                if (numberValue.length > 3) {
+                    formattedValue += numberValue.substr(0, 3) + '-';
+                    if (numberValue.length > 6) {
+                        formattedValue += numberValue.substr(3, 3) + '-';
+                        formattedValue += numberValue.substr(6);
+                    } else {
+                        formattedValue += numberValue.substr(3);
+                    }
+                } else {
+                    formattedValue = numberValue;
+                }
+
+                $(this).val(formattedValue.substr(0, 12));
+            });
+        });
+<script type="text/javascript">
+require([
+    'jquery',
+    'jquery/ui',
+    'jquery/validate',
+    'mage/translate'
+], function($){
+    $("#postcode").addClass("postcode-format-check");
+    //var regexp = /^[A-Z]{1,2}[0-9RCHNQ][0-9A-Z]?\s?[0-9][ABD-HJLNP-UW-Z]{2}$|^[A-Z]{2}-?[0-9]{4}$/;
+    var regexp = /^[A-Z]{1,2}[0-9RCHNQ][0-9A-Z]?\s?[0-9][ABD-HJLNP-UW-Z]{2}$|^[A-Z]{2}-?[0-9]{4}$|^\d{5}(-\d{4})?$/;
+    $.validator.addMethod(
+        'postcode-format-check', function (value) {
+            var zipcode = value.toUpperCase();
+            if(regexp.test(zipcode)) 
+            {
+                //var extractedZip = zipcode.slice(0, 5);
+                //console.log(extractedZip);
+                return true;
+            }
+        },
+        $.mage.__("Please enter a valid postcode.")
+    );
+    $('#postcode').on("keyup", function() {
+        var dInput = this.value;
+        if(dInput) {
+            var zipcode = dInput.toUpperCase();
+            if(regexp.test(zipcode)) 
+            {
+                $('#postcode-error').hide();
+            }
+            else{
+                $('#postcode-error').show();
+            }
+        }
+    });
+    $("#savedetailsbtn").click(function(){
+        var postcode = $("#postcode").val();
+        postcode = postcode.toUpperCase();
+        var regexp = new RegExp("\\s+");
+        // if(! regexp.test(postcode)) {
+        //     //postcode = postcode.replace(/-.*/, '');
+        //     //postcode = postcode.replace(/(\s-\s.*)|(\-.*)/, '');
+        // }
+        $("#postcode").val(postcode);
+    }); 
+});
+</script>
