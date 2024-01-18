@@ -549,3 +549,68 @@ require([
     }); 
 });
 </script>
+======================================================================================
+try this to work
+$(document).ready(function(){
+        $("#telephoneno").addClass("telephone-check");
+        $.validator.addMethod(
+            'telephone-check', function (value) {
+                var numberValue = value.replace(/[^0-9\s]/g, '');
+                var formattedValue = '';
+                if (numberValue.length > 3) {
+                    formattedValue += numberValue.substr(0, 3) + '-';
+                    if (numberValue.length > 6) {
+                        formattedValue += numberValue.substr(3, 3) + '-';
+                        formattedValue += numberValue.substr(6);
+                    } else {
+                        formattedValue += numberValue.substr(3);
+                    }
+                } else {
+                    formattedValue = numberValue;
+                }
+
+                $("#telephoneno").val(formattedValue.substr(0, 12));
+                return /^\d{3}-\d{3}-\d{4}$/.test(formattedValue);
+            }, $.mage.__("This filed is requried.")
+        );
+        $("#telephoneno").on('input', function() {
+            $(this).valid();
+        });
+   
+        
+================================================================================        
+        
+        
+        $( document ).ready(function () {
+            $("#mobileno").addClass("mobile-check");
+            $("#mobileno").on("input", function () {
+                var Value = $(this).val();
+                var numberValue = Value.replace(/[^0-9\s]/g, '');
+                var formattedValue = '';
+                if (numberValue.length > 3) {
+                    formattedValue += numberValue.substr(0, 3) + '-';
+                    if (numberValue.length > 6) {
+                        formattedValue += numberValue.substr(3, 3) + '-';
+                        formattedValue += numberValue.substr(6);
+                    } else {
+                        formattedValue += numberValue.substr(3);
+                    }
+                } else {
+                    formattedValue = numberValue;
+                }
+
+                $(this).val(formattedValue.substr(0, 12));
+                $.validator.addMethod(
+                    'mobile-check',
+                    function (v) {
+                        var number = $.trim(v);
+                        if (!/^\d{3}-\d{3}-\d{4}$/.test(number)) {
+                            return false;
+                        }
+                        return true;
+                    },
+                    $.mage.__('Invalid telephone number format')
+                );
+                $('#mobileno').validation();
+            });
+        });
