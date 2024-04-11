@@ -651,3 +651,58 @@ class RegionIdFinder extends Action
         return $resultPage;
     }
 }
+=======================================================================================================
+accordions
+$(document).ready(function () {
+            $("#elementOrderHistoryParentViewList").accordion({
+                "openedState": "active",
+                "collapsible": true,
+                'heightStyle': 'content',
+                "multipleCollapsible": false,
+                active: 0,
+                create: function(event, ui) {
+                    toggleIcons("elementOrderHistoryParentViewList");
+                },
+                activate: function(event, ui) {
+                    toggleIcons("elementOrderHistoryParentViewList", ui.newHeader[0]);
+                }
+            });
+            $("#elementOrderHistorychildViewList").accordion({
+                "openedState": "active",
+                "collapsible": true,
+                'heightStyle': 'content',
+                "multipleCollapsible": false,
+                active: 0,
+                create: function(event, ui) {
+                    toggleIcons("elementOrderHistorychildViewList");
+                },
+                activate: function(event, ui) {
+                    toggleIcons("elementOrderHistorychildViewList", ui.newHeader[0]);
+                }
+            });
+        });
+         // Function to toggle icons
+         function toggleIcons(accordionId, activeHeader) {
+                $("#" + accordionId + " .ui-accordion-header").each(function(index, element) {
+                    var isActive = (activeHeader && element === activeHeader) || $(element).hasClass("ui-state-active");
+                    var plusIcon = $(element).find(".plusico");
+                    var minusIcon = $(element).find(".minico");
+            
+                    if (isActive) {
+                        plusIcon.hide();
+                        minusIcon.show();
+                    } else {
+                        plusIcon.show();
+                        minusIcon.hide();
+                    }
+                });
+            }
+			accordance another example
+			activate: function(event, ui) {
+                            toggleIcons("note-popup-element");
+                        // Remove inline height style from active accordion content
+                           setTimeout(function() {
+                                var activeAccordionContent = $(".ui-accordion-content.ui-accordion-content-active");
+                                activeAccordionContent.css("height", "");
+                            },10);
+                        }
