@@ -707,3 +707,15 @@ $(document).ready(function () {
                                 activeAccordionContent.css("height", "");
                             },10);
                         }
+===========================================================================================================================
+public function getAddressDetails($id)
+    {
+        $customerAddress = $this->wffCustomerAddress->load($id, 'child_id');
+        $addressDetails = [
+            'address_line1' => $customerAddress->getData('address_line1'),
+            'address_line2' => $customerAddress->getData('address_line2'),
+            'city' => $customerAddress->getData('region'),
+            'postcode' => $customerAddress->getData('postal_code')
+        ];
+        return $addressDetails;
+    }
