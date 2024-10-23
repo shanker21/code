@@ -1,3 +1,25 @@
+tBJuDGU9N46hZ4NqQfGY
+196.12.41.78
+OneD#GiTalsKRK
+sudo update-alternatives --config php
+<div data-bind="text: console.log($parent)"></div>
+vendor/bin/phpcs --standard=Magento2 
+vendor/bin/phpcbf --standard=Magento2 
+composer self-update --rollback
+ 
+[xdebug]
+xdebug.mode = debug
+zend_extension=/usr/lib/php/20230831/xdebug.so
+xdebug.start_with_request = yes
+xdebug.remote_enable = 1
+xdebug.remote_handler = dbgp
+xdebug.remote_host = 127.0.0.1
+xdebug.remote_log = /tmp/xdebug_remote.log
+xdebug.remote_mode = req
+xdebug.remote_port = 9003
+xdebug.force_display_errors
+
+
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions
 use Psr\Log\LoggerInterface;
 $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/custom.log');       
