@@ -1,0 +1,23 @@
+//query to get the order count from order date
+SELECT 
+    DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') AS order_datetime,
+    COUNT(*) AS order_count
+FROM sales_order
+WHERE DATE(created_at) IN ('2025-01-02', '2025-01-09', '2025-01-16', '2025-01-23', '2025-01-30', 
+                           '2025-02-06', '2025-02-13', '2025-02-20', '2025-02-27', 
+                           '2025-03-06', '2025-03-13', '2025-03-20') and channel in ('WEB', 'web', 'Web')
+GROUP BY order_datetime
+ORDER BY order_datetime;
+
+query is to get the if empty value for city and street from sales_order_address and join the sale_order 
+select sa.entity_id, sa.parent_id, s.increment_id, s.created_at, sa.address_type, sa.firstname, sa.lastname, sa.postcode, sa.region, sa.city, sa.telephone
+from sales_order_address as sa join sales_order as s on s.entity_id = sa.parent_id where s.created_at > date('2024-09-01')
+and s.migrated = 0 and s.channel in ('WEB', 'web', 'Web')
+and  ((sa.street is NULL OR sa.street = "") 
+or (sa.city is NULL OR sa.city = ""))
+query is to get the if empty value for city and street and telephone from sales_order_address and join the sale_order 
+select sa.entity_id, sa.parent_id, s.increment_id, s.created_at, sa.address_type, sa.firstname, sa.lastname, sa.postcode, sa.region, sa.city, sa.telephone
+from sales_order_address as sa join sales_order as s on s.entity_id = sa.parent_id where s.created_at > date('2025-01-01')
+and s.migrated = 0 and s.channel in ('WEB', 'web', 'Web')
+and  ((sa.street is NULL OR sa.street = "") 
+or (sa.city is NULL OR sa.city = "") or (sa.telephone is NULL OR sa.telephone = ""))
