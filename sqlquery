@@ -61,3 +61,9 @@ LEFT JOIN sea_course_videos AS v
        ON v.topic_id = d.topic_id
 
 ORDER BY d.course_type_id, d.course_level_id, d.topicOrder, v.video_title;
+
+
+
+
+
+SELECT t.topic_id, t.topic, ct.course_type, cl.course_level, v.video_title, v.video_path FROM sea_course_videos AS v JOIN sea_course_level_topics AS t ON v.topic_id = t.topic_id JOIN sea_course_types AS ct ON t.course_type_id = ct.course_type_id JOIN sea_course_levels AS cl ON t.course_level_id = cl.course_level_id WHERE v.topic_id = 3;
