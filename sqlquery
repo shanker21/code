@@ -21,3 +21,43 @@ from sales_order_address as sa join sales_order as s on s.entity_id = sa.parent_
 and s.migrated = 0 and s.channel in ('WEB', 'web', 'Web')
 and  ((sa.street is NULL OR sa.street = "") 
 or (sa.city is NULL OR sa.city = "") or (sa.telephone is NULL OR sa.telephone = ""))
+
+
+
+
+
+
+
+SELECT 
+    d.topic_id,
+    d.topic AS topic_name,
+    d.formula,
+    d.questions,
+    d.topicOrder,
+    d.image,
+    d.pdf,
+    d.status,
+
+    ct.course_type_id,
+    ct.course_type,
+
+    cl.course_level_id,
+    cl.course_level,
+
+    v.video_id,
+    v.video_title,
+    v.video_path,
+    v.created_at
+
+FROM sea_direct_course_level_topics AS d
+
+LEFT JOIN sea_course_types AS ct 
+       ON d.course_type_id = ct.course_type_id
+
+LEFT JOIN sea_course_levels AS cl 
+       ON d.course_level_id = cl.course_level_id
+
+LEFT JOIN sea_course_videos AS v
+       ON v.topic_id = d.topic_id
+
+ORDER BY d.course_type_id, d.course_level_id, d.topicOrder, v.video_title;
