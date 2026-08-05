@@ -1,3 +1,4 @@
+https://cssgenerator.org/rgba-and-hex-color-generator.html#google_vignette
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions
 use Psr\Log\LoggerInterface;
 $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/custom.log');       
