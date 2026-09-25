@@ -1,0 +1,64 @@
+1) What are the basic functions of Microsoft Excel?
+A: Excel is a spreadsheet application used for:
+Data entry
+Data cleaning
+Calculations
+Data analysis
+Sorting and filtering
+Charts and visualization
+PivotTables
+Financial analysis
+Reporting and dashboards
+Forecasting
+basic function are : sum(), average(), count(), countx(),max(), min(),if(), sumx(), xlookup(),vlookup(),hlookup(), index(),match() 
+==============================================================================
+2) Explain the difference between a workbook and a worksheet.
+Answer: A worksheet is an individual sheet inside the workbook.
+example: sales, customer, orders, product, summary
+one workbook conatin mutiple sheets
+3) How would you freeze panes in Excel?
+answer: Go to -> views-> freeze panes -> freeze top rows . it will in large data set
+4) Can you name some common keyboard shortcuts in Excel?
+      shortcut       purpose
+      ctrl + c       Copy
+      ctrl +v        Paste
+      ctrl + z       Undo
+      ctrl + X       Cut
+      ctrl + Y       Redo
+      ctrl + s       Save
+      ctrl + F       Find
+      ctrl + H       Replace
+      ctrl + A       SelectAll
+      ctrl + shift + L = Filter
+      Alt+ =         Autosum
+      ctrl + Arrow   Move date to edge
+      ctrl + Shift +Arrow  Select Data Range
+5) What is the purpose of VLOOKUP and HLOOKUP?
+7) How do you remove duplicate values in Excel?
+8) Explain the steps to filter data in Excel.
+9) What is the significance of the "IF" function in Excel, and can you provide an example of its use?
+10) How would you create a pivot table in Excel?
+11) Explain the use of the CONCATENATE function in Excel.
+12) How do you create a chart in Excel?
+13) Explain the difference between a line chart and a scatter plot.
+14) What is conditional formatting, and how can it be applied in Excel?
+15) How would you create a dynamic chart that updates with new data?
+16) What is the INDEX-MATCH function, and how is it different from VLOOKUP?
+17) Can you explain the concept of "PivotTables" and when you would use them?
+18) How do you use the "COUNTIF" and "SUMIF" functions in Excel?
+19) Explain the purpose of the "What-If Analysis" tools in Excel.
+20) What are array formulas, and can you provide an example of their use?
+
+Business Analysis Specific:
+
+1) How would you analyze a set of sales data to identify trends and insights?
+2) Explain how you might use Excel to perform financial modeling.
+3) What Excel features would you use for forecasting and budgeting?
+4) How do you handle large datasets in Excel, and what tools or techniques do you use for optimization?
+5) What are some common techniques for cleaning and validating data in Excel?
+6) How do you identify and handle errors in a dataset using Excel?
+
+Scenario-based Questions:
+
+1) Imagine you have a dataset with missing values. How would you approach this problem in Excel?
+2) You are given a dataset with multiple sheets. How would you consolidate the data for analysis?
