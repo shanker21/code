@@ -54,7 +54,9 @@ Home → Conditional Formatting → Highlight Cells Rules → Duplicate Values
 
 8) Explain the steps to filter data in Excel.
 there is shortcut key ctrl + shift+L
-or select the column and right clik select filter
+(oR)
+Sales → Number Filters → Greater Than → 30000
+===================================================================
 9) What is the significance of the "IF" function in Excel, and can you provide an example of its use?
 if condition is an logical function 
 example if(sale > 1000,"high"low"
@@ -65,16 +67,78 @@ example if(sale > 1000,"high"low"
 -> it should be table/range
 -> select where to display the pivot table
 -> drage the column, row and value into dataset
+=======================================================
 11) Explain the use of the CONCATENATE function in Excel.
 it combination of two cells
+================================================================
 12) How do you create a chart in Excel?
--> select the data and go  to data and click on chart 
+-> Select the data.
+-> Go to Insert.
+-> Select a chart type.
+-> Customize title, axis, labels, etc.
+================================================================
 13) Explain the difference between a line chart and a scatter plot.
+line: Used to show trends, especially over time.
+scatter : Used to show the Realtion/corealtion between two values
+========================================================================
 14) What is conditional formatting, and how can it be applied in Excel?
+Conditional formatting automatically changes the formatting of the cell based on condition
+eg: Highlight sales above ₹30,000
+home->conditionall formatting->higlight cellsrules-> greaterthan
+enter 300
+You can also use color scales, data bars, duplicate highlighting, etc.
+==========================================================================
 15) How would you create a dynamic chart that updates with new data?
+One good approach is to convert your data into an Excel Table.
+
+Select data:
+
+Ctrl + T
+
+Then create a chart from the table.
+
+When new rows are added to the table, the chart can automatically include the new data.
+
+For more advanced dashboards, you can combine:
+
+Excel Tables
+PivotTables
+PivotCharts
+Slicers
+Dynamic formulas
+==========================================================================
 16) What is the INDEX-MATCH function, and how is it different from VLOOKUP?
+index-match is vlook techqiue
+=index(E2:E11,match("1001",A2:A1,0))
+It finds O1005 in column A and returns the corresponding Product from column E.
+VLOOKUP	                          INDEX-MATCH
+Easier to learn	                     More flexible
+Searches from left to right	         Can look in different directions
+Uses column number	               Uses separate lookup/return ranges
+Inserting columns can cause issues	   More robust
+===========================================================================================
 17) Can you explain the concept of "PivotTables" and when you would use them?
+A pivot table is summarrize large amount of data quickly.
+For example, from 10,000 sales records you can calculate:
+Total Sales by Region
+Total Sales by Product
+Sales by Employee
+Monthly Sales
+Average Sales
+Number of Orders
+without manullay wriiting any formula
+============================================================================
 18) How do you use the "COUNTIF" and "SUMIF" functions in Excel?
+both are the iteraton function
+countif(): Counts cells matching a condition
+example countif(c2:c22,"south")
+Counts how many orders are from South.
+sumif(): Add values based on condition and also use for mutliple condtion.
+sumif(d2:d11,"south"),I1:I11)
+muliple condition
+=SUMIFS(I2:I11,C2:C11,"South",F2:F11,"Electronics")
+This calculates total Sales for South.
+==================================================================================
 19) Explain the purpose of the "What-If Analysis" tools in Excel.
 20) What are array formulas, and can you provide an example of their use?
 
