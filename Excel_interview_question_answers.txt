@@ -34,12 +34,41 @@ answer: Go to -> views-> freeze panes -> freeze top rows . it will in large data
       ctrl + Arrow   Move date to edge
       ctrl + Shift +Arrow  Select Data Range
 5) What is the purpose of VLOOKUP and HLOOKUP?
+VLOOKUP searches vertically in the first column of a table.
+
+Example:
+
+=VLOOKUP("O1005",A2:J11,5,FALSE)
+hlookup horizontal
 7) How do you remove duplicate values in Excel?
+Select the data:
+Data → Remove Duplicates
+Then select the columns you want Excel to check.
+For example:
+Region
+Salesperson
+Product
+Excel will remove duplicate records based on your selected columns.
+You can also identify duplicates with:
+Home → Conditional Formatting → Highlight Cells Rules → Duplicate Values
+
 8) Explain the steps to filter data in Excel.
+there is shortcut key ctrl + shift+L
+or select the column and right clik select filter
 9) What is the significance of the "IF" function in Excel, and can you provide an example of its use?
+if condition is an logical function 
+example if(sale > 1000,"high"low"
+=================================================
 10) How would you create a pivot table in Excel?
+-> select the data
+-> go to insert tab and select the pivot table
+-> it should be table/range
+-> select where to display the pivot table
+-> drage the column, row and value into dataset
 11) Explain the use of the CONCATENATE function in Excel.
+it combination of two cells
 12) How do you create a chart in Excel?
+-> select the data and go  to data and click on chart 
 13) Explain the difference between a line chart and a scatter plot.
 14) What is conditional formatting, and how can it be applied in Excel?
 15) How would you create a dynamic chart that updates with new data?
